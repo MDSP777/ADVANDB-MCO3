@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.sun.rowset.CachedRowSetImpl;
+
 import model.ResultSetWrapper;
 
 public class Server {
@@ -84,7 +86,7 @@ public class Server {
 								// wait for the data
 								data = ss.accept();
 								ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
-								ResultSetWrapper rsw = (ResultSetWrapper) ois.readObject();
+								CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
 								data.close();
 								
 								// send data back to Palawan

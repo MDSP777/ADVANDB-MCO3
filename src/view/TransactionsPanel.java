@@ -34,7 +34,12 @@ public class TransactionsPanel extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					client.case1(transactionsList);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		
