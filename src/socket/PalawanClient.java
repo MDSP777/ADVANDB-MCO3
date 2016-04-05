@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import model.Entity;
+
 import com.sun.rowset.CachedRowSetImpl;
 
 import dbutils.DBManager;
@@ -29,7 +31,7 @@ public class PalawanClient extends Client {
 	private int isolationLevel = 4;
 	private String clientName = "Palawan";
 	private String dbName = "db_hpq_palawan";
-	private volatile HashMap<String, ResultSet> rsMap = new HashMap<>();
+	private volatile HashMap<String, ArrayList<Entity>> rsMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
 	private volatile boolean resultSetReceived;
 	private volatile int transactionId = 0;
@@ -48,6 +50,7 @@ public class PalawanClient extends Client {
 	}
 	
 	public void case1(ArrayList<String> transactions) throws Exception {
+		transactionId = 0;
 		for(String cur: transactions){
 			System.out.println(cur);
 			int id = getTransactionId();
@@ -70,9 +73,6 @@ public class PalawanClient extends Client {
 					if(clientName.equals(split[2])){
 						ResultSet rs = executeRead(split[1]);
 						putIntoMap(split[3], rs);
-						while(rs.next()){
-							System.out.println(rs.getInt(1));
-						}
 					} else {
 						Socket s = new Socket(serverIp, 6969);
 						DataOutputStream dout = new DataOutputStream(s.getOutputStream());
@@ -212,7 +212,34 @@ public class PalawanClient extends Client {
 	}
 	
 	public synchronized void putIntoMap(String id, ResultSet rs){
-		rsMap.put(id, rs);
+		ArrayList<Entity> e = new ArrayList<>();
+		try {
+			while(rs.next()){
+				Entity cur = new Entity(
+						rs.getInt(1),
+						rs.getInt(2),
+						rs.getInt(3),
+						rs.getInt(4),
+						rs.getInt(5),
+						rs.getInt(6),
+						rs.getInt(7),
+						rs.getInt(8),
+						rs.getInt(9),
+						rs.getInt(10),
+						rs.getInt(11),
+						rs.getInt(12),
+						rs.getInt(13),
+						rs.getInt(14));
+				e.add(cur);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		rsMap.put(id, e);
+	}
+	
+	public ArrayList<Entity> getById(String id){
+		return rsMap.get(id);
 	}
 	
 	public void sendCrashMessage() throws UnknownHostException, IOException {
