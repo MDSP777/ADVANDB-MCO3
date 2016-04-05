@@ -91,7 +91,7 @@ public class Server {
 					switch(split[0]){
 						case "Palawan":
 							if(split[1].startsWith("SELECT")){
-								if (cIp != null){ // TODO central is alive
+								if (cIp != null){ 
 									// send a request for data from central
 									Socket data = new Socket(cIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
@@ -111,7 +111,7 @@ public class Server {
 									oos.writeObject(rsw);
 									oos.close();
 									data.close();
-								} else if(mIp != null){ // TODO marinduque is alive
+								} else if(mIp != null){ 
 									// send a request for data from marinduque
 									Socket data = new Socket(mIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
@@ -131,7 +131,7 @@ public class Server {
 									System.out.println("Got data! Sending back to requester...");
 									data = new Socket(pIp, 6969);
 									dos = new DataOutputStream(data.getOutputStream());
-									dos.writeUTF("Sending data@"+split[3]);
+									dos.writeUTF("Sending data");
 									dos.close();
 									data.close();
 									data = new Socket(pIp, 6969);
@@ -151,7 +151,7 @@ public class Server {
 								// not sure about any of this shiz below
 								switch(split[0]){
 									case "Palawan":
-										if(cIp != null){ // TODO if central is alive
+										if(cIp != null){ 
 											// send update request to central 
 											System.out.println("Sending request to central...");
 											Socket data = new Socket(cIp, 6969);
@@ -170,17 +170,12 @@ public class Server {
 											
 											// send ok to palawan
 											System.out.println("Received confirmation: "+ok);
-	//										if("OK".equals(ok)){
-	//											data = ss.accept();
-	//											dos = new DataOutputStream(data.getOutputStream());
-	//											dos.writeUTF("OK");
-	//											dos.close();
-	//											data.close();
-	//										} else {
-	//											// TODO tell palawan to kill himself
-	//										}
 										} else { // central is dead
-											// TODO tell palawan to kill himself
+											Socket data = new Socket(pIp, 6969);
+											DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+											dos.writeUTF("Central has died");
+											dos.close();
+											data.close();
 										}
 										break;
 									case "Marinduque":
