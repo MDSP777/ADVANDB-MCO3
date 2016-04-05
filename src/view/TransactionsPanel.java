@@ -57,7 +57,7 @@ public class TransactionsPanel extends JPanel{
 	public void addTransaction(Transaction transaction) {
 		transactions.add(transaction);
 		taTransactions.append(transaction.toString()+"\n");
-		transactionsList.add(transaction.toString());
+		transactionsList.add(QueryGenerator.generate(transaction));
 		System.out.println(QueryGenerator.generate(transaction));
 	}
 	

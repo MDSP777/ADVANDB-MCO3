@@ -4,6 +4,7 @@ public class WriteTransaction extends Transaction{
 	private String householdID;
 	private String calamity;
 	private String frequency;
+	private String branchName;
 	
 	public String getHouseholdID() {
 		return householdID;
@@ -28,7 +29,15 @@ public class WriteTransaction extends Transaction{
 	public void setFrequency(String frequency) {
 		this.frequency = frequency;
 	}
-	
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
+
 	public String toString() {
 		return "Write: Household ID = " + householdID + ", Calamity = " + calamity + ", Frequency = " + frequency;
 	}

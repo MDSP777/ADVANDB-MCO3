@@ -13,14 +13,10 @@ public class QueryGenerator {
 	}
 	
 	private static String generate(ReadTransaction transaction) {
-		String query = transaction.getBranchName()+"@SELECT COUNT(*) "
-				+ "FROM (SELECT CP.hpq_hh_id, SUM(CP.crop_vol) AS crop_vol "
-						+ "FROM db_hpq.hpq_crop CP GROUP BY CP.hpq_hh_id) Crop, "
-						+ "(SELECT AQ.hpq_hh_id, SUM(AQ.aquani_vol) AS aquani_vol "
-						+ "FROM db_hpq.hpq_aquani AQ GROUP BY AQ.hpq_hh_id) Fish, "
+		String query = transaction.getBranchName()+"@SELECT * "
+				+ "FROM "
 						+ "db_hpq.hpq_hh H "
-				+ "WHERE Crop.hpq_hh_id = H.id "
-						+ "AND Fish.hpq_hh_id = H.id ";
+				+ "WHERE id=id ";
 		
 		String harvest = "AND (";
 		for(String h : transaction.getSliceAndDiceHarvest().toString().split(",")) {
@@ -53,13 +49,14 @@ public class QueryGenerator {
 			query += animal;
 		}
 		
-		return query+"@"+transaction.getDatabase();
+		return (query+"@"+transaction.getDatabase()).replaceAll("db_hpq", "db_hpq_"+transaction.getDatabase().toLowerCase());
 	}
 	
 	private static String generate(WriteTransaction transaction) {
-		String query = "UPDATE hpq_hh "
-				+ "SET calam" + transaction.getCalamity().split(" ")[0] + "hwmny=" + transaction.getFrequency()
+		String query = transaction.getBranchName()+"@UPDATE hpq_hh "
+				+ "SET calam" + transaction.getCalamity().split(" ")[0] + "_hwmny=" + transaction.getFrequency()
 				+ " WHERE id=" + transaction.getHouseholdID() + " LIMIT 1;";
+//		return query.replaceAll("db_hpq", "db_hpq_"+transaction.getDatabase().toLowerCase());
 		return query;
 	}
 }

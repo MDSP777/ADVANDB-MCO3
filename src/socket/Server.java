@@ -62,7 +62,6 @@ public class Server {
 		System.out.println("All connected!");
 	}
 
-	@SuppressWarnings("unused")
 	public void serve() throws ClassNotFoundException {
 		Socket curr;
 		while(true) {
@@ -75,7 +74,7 @@ public class Server {
 				switch(split[0]){
 					case "Palawan":
 						if(split[1].startsWith("SELECT")){
-							if (true){ // TODO central is alive
+							if (false){ // TODO central is alive
 								// send a request for data from central
 								Socket data = new Socket(cIp, 6969);
 								DataOutputStream dos = new DataOutputStream(data.getOutputStream());
@@ -117,18 +116,22 @@ public class Server {
 								oos.close();
 								data.close();
 							} else { // both are dead
-								// TODO abort
+								Socket data = new Socket(mIp, 6969);
+								DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+								dos.writeUTF("Unable to read");
+								dos.close();
+								data.close();
 							}
 						// code for writing
-						} else {
+						} else if(split[1].startsWith("UPDATE")) {
 							// not sure about any of this shit below
-							switch(split[3]){
+							switch(split[0]){
 								case "Palawan":
 									if(true){ // TODO if central is alive
 										// send update request to central 
 										Socket data = new Socket(cIp, 6969);
 										DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-										dos.writeUTF(SERVER_NAME+" write "+split[2]+" "+split[3]);
+										dos.writeUTF(message);
 										dos.close();
 										data.close();
 										
