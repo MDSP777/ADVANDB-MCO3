@@ -1,6 +1,8 @@
 package view;
 
 import java.awt.Component;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
@@ -21,8 +23,10 @@ public class MainFrame extends JFrame{
 	private ReadPanel readPanel;
 	private WritePanel writePanel;
 	private TransactionsPanel transactionsPanel;
+	private ResultPanel resultPanel;
 	private String IPAddress;
 	private String branchName;
+	private PalawanClient client;
 	
 	public MainFrame() throws IOException {
 		JPanel serverPanel = new JPanel();
@@ -54,21 +58,71 @@ public class MainFrame extends JFrame{
 			writePanel.setSize(250, 150);
 			transactionsPanel.setLocation(250,  150);
 			transactionsPanel.setSize(250, 400);
-			switch(branchName){
-				case "Palawan":
-					transactionsPanel.setClient(new PalawanClient(IPAddress));
-					break;
-			}
+			client = new PalawanClient(IPAddress);
+			transactionsPanel.setClient(client);
+			resultPanel = new ResultPanel();
+			resultPanel.setLocation(500, 0);
+			resultPanel.setSize(865, 550);
 			mainPanel.add(readPanel);
 			mainPanel.add(writePanel);
 			mainPanel.add(transactionsPanel);
-			
+			mainPanel.add(resultPanel);
 			
 			this.add(mainPanel);
 			this.setTitle("ADVANDB MC03");
 			this.setLocationRelativeTo(null);
 			this.setVisible(true);
 			this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			this.addWindowListener(new WindowListener() {
+
+				@Override
+				public void windowActivated(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void windowClosed(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void windowClosing(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					try {
+						client.sendCrashMessage();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+				@Override
+				public void windowDeactivated(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void windowDeiconified(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void windowIconified(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void windowOpened(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
 		}
 	}
 }
