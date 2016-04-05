@@ -67,7 +67,7 @@ public class QueryGenerator {
 	
 	private static String generate(WriteTransaction transaction) {
 		String query = transaction.getBranchName()+"@UPDATE hpq_hh "
-				+ "SET calam" + transaction.getCalamity().split(" ")[0] + "_hwmny=" + transaction.getFrequency()
+				+ "SET calam" + transaction.getCalamity().split(" ")[0] + "_hwmny=calam" + transaction.getCalamity().split(" ")[0] + "_hwmny+" + transaction.getFrequency()
 				+ " WHERE id=" + transaction.getHouseholdID() + " LIMIT 1;";
 //		return query.replaceAll("db_hpq", "db_hpq_"+transaction.getDatabase().toLowerCase());
 		return query;

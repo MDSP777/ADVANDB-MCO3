@@ -162,7 +162,7 @@ public class Server {
 											
 											// receive confirmation from central
 											System.out.println("Waiting for confirmation from central...");
-											data = new Socket(cIp, 6969);
+											data = ss.accept();
 											DataInputStream din = new DataInputStream(data.getInputStream());
 											String ok = din.readUTF();
 											din.close();
