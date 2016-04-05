@@ -15,7 +15,6 @@ import model.ReadTransaction;
 
 public class ReadPanel extends JPanel{
 	
-	private IsolationLevelPanel isolationLevelPanel;
 	private RollupAndDrilldownPanel rollupAndDrilldownPanel;
 	private SliceAndDicePanel sliceAndDicePanel;
 	private TransactionsPanel transactionsPanel;
@@ -26,14 +25,12 @@ public class ReadPanel extends JPanel{
 	public ReadPanel(TransactionsPanel transactionsPanel, String branchName) {
 		this.transactionsPanel = transactionsPanel;
 		
-		isolationLevelPanel 	= new IsolationLevelPanel();
 		rollupAndDrilldownPanel = new RollupAndDrilldownPanel();
 		sliceAndDicePanel 		= new SliceAndDicePanel();
 		btnAdd 					= new JButton("Add");
 		cbDatabases = new JComboBox(new String[]{"Palawan", "Marinduque", "Central"});
 		this.branchName = branchName;
 		
-		isolationLevelPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		rollupAndDrilldownPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sliceAndDicePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btnAdd.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -41,7 +38,6 @@ public class ReadPanel extends JPanel{
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.setBorder(BorderFactory.createTitledBorder("Read"));
-		this.add(isolationLevelPanel);
 		this.add(cbDatabases);
 		this.add(rollupAndDrilldownPanel);
 		this.add(sliceAndDicePanel);
