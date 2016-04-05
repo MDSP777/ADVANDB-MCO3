@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,8 +29,10 @@ public class PalawanClient extends Client {
 	private int isolationLevel = 4;
 	private String clientName = "Palawan";
 	private String dbName = "db_hpq_palawan";
+	private volatile HashMap<String, ResultSet> rsMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
 	private volatile boolean resultSetReceived;
+	private volatile int transactionId = 0;
 	
 	public PalawanClient(String serverIp) throws IOException{
 		ss = new ServerSocket(6969);
@@ -47,7 +50,8 @@ public class PalawanClient extends Client {
 	public void case1(ArrayList<String> transactions) throws Exception {
 		for(String cur: transactions){
 			System.out.println(cur);
-			new Thread(new TransactionThread(cur)).start();
+			int id = getTransactionId();
+			new Thread(new TransactionThread(cur+"@"+id)).start();
 		}
 	}
 	
@@ -65,6 +69,7 @@ public class PalawanClient extends Client {
 				if(split.length>=2 && split[1].startsWith("SELECT")){
 					if(clientName.equals(split[2])){
 						ResultSet rs = executeRead(split[1]);
+						putIntoMap(split[3], rs);
 						while(rs.next()){
 							System.out.println(rs.getInt(1));
 						}
@@ -75,8 +80,7 @@ public class PalawanClient extends Client {
 						dout.close();
 						s.close();
 						
-						while(!resultSetReceived);
-						resultSetReceived = false;
+						while(!rsMap.containsKey(split[2]));
 						ResultSet rs = rsw.getOriginal();
 						while(rs.next()){
 							System.out.println(rs.getInt(1));
@@ -135,6 +139,11 @@ public class PalawanClient extends Client {
 		resultSetReceived = true;
 	}
 	
+	public synchronized int getTransactionId(){
+		transactionId++;
+		return transactionId;
+	}
+	
 	class IncomingThread implements Runnable{
 
 		@Override
@@ -142,7 +151,6 @@ public class PalawanClient extends Client {
 			 try {
                 while(true){
 					Socket s = ss.accept();
-					InputStream is = s.getInputStream();
 					DataInputStream din = new DataInputStream(s.getInputStream());
 					try{
 	                    String msgin = din.readUTF();
@@ -151,16 +159,17 @@ public class PalawanClient extends Client {
 	                    if(split[0].equals("Unable to read")){
 	                    	rsw = new CachedRowSetImpl();
 	                    	resultSetReceived = true;
-	                    } else if(split[0].equals("Sending data")){
+	                    } else if(split[0].startsWith("Sending data")){
 	                    	System.out.println("Receiving data...");
 	                    	s = ss.accept();
 	                    	ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
 							try {
 									rsw = (CachedRowSetImpl) ois.readObject();
+									ResultSet rs = rsw.getOriginal();
+									putIntoMap(split[1], rs);
 							} catch (ClassNotFoundException e1) {
 								e1.printStackTrace();
 							}
-							unlockResultSet();
 							System.out.println("Unlocked Result Set");
 	                    } else {
 		                    if(split[1].startsWith("SELECT")){
@@ -200,6 +209,10 @@ public class PalawanClient extends Client {
             } 
 		}
 		
+	}
+	
+	public synchronized void putIntoMap(String id, ResultSet rs){
+		rsMap.put(id, rs);
 	}
 	
 	public void sendCrashMessage() throws UnknownHostException, IOException {
