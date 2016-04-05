@@ -7,10 +7,12 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import model.WriteTransaction;
@@ -22,8 +24,11 @@ public class WritePanel extends JPanel{
 	private JTextField tfFrequency;
 	private TransactionsPanel transactionsPanel;
 	private JButton btnAdd;
+	private JRadioButton toCrash;
+	private JRadioButton notCrash;
+	private ButtonGroup bg;
 	
-	public WritePanel(TransactionsPanel transactionsPanel, String branchName) {
+	public WritePanel(TransactionsPanel transactionsPanel) {
 		this.transactionsPanel = transactionsPanel;
 		btnAdd = new JButton("Add");
 		
@@ -52,8 +57,19 @@ public class WritePanel extends JPanel{
 		
 		panelCalamity.add(panelFrequency);
 		
+		JPanel panelCrash = new JPanel();
+		panelCrash.setLayout(new BoxLayout(panelCrash, BoxLayout.LINE_AXIS));
+		toCrash = new JRadioButton("To Crash");
+		notCrash = new JRadioButton("Not to Crash");
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(toCrash);
+		bg.add(notCrash);
+		panelCrash.add(toCrash);
+		panelCrash.add(notCrash);
+		
 		this.add(panelHousehold);
 		this.add(panelCalamity);
+		this.add(panelCrash);
 		this.add(btnAdd);
 		
 		btnAdd.addActionListener(new ActionListener() {
@@ -65,7 +81,6 @@ public class WritePanel extends JPanel{
 				writeTransaction.setHouseholdID(tfHousehold.getText());
 				writeTransaction.setCalamity(cbCalamities.getSelectedItem().toString());
 				writeTransaction.setFrequency(tfFrequency.getText());
-				writeTransaction.setBranchName(branchName);
 				transactionsPanel.addTransaction(writeTransaction);
 			}
 			
