@@ -22,6 +22,7 @@ public class TransactionsPanel extends JPanel{
 	private JButton btnExecute;
 	private Client client;
 	private ArrayList<String> transactionsList;
+	private int id = 0;
 	
 	public TransactionsPanel() {
 		taTransactions = new JTextArea();
@@ -36,6 +37,7 @@ public class TransactionsPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					client.case1(transactionsList);
+					id = 0;
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -55,10 +57,11 @@ public class TransactionsPanel extends JPanel{
 	}
 	
 	public void addTransaction(Transaction transaction) {
+		id++;
 		transactions.add(transaction);
 		taTransactions.append(transaction.toString()+"\n");
-		transactionsList.add(QueryGenerator.generate(transaction));
-		System.out.println(QueryGenerator.generate(transaction));
+		transactionsList.add(QueryGenerator.generate(transaction)+"@"+id);
+		System.out.println(QueryGenerator.generate(transaction)+"@"+id);
 	}
 	
 	public void setClient(Client c){

@@ -34,7 +34,6 @@ public class PalawanClient extends Client {
 	private volatile HashMap<String, ArrayList<Entity>> rsMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
 	private volatile boolean resultSetReceived;
-	private volatile int transactionId = 0;
 	
 	public PalawanClient(String serverIp) throws IOException{
 		ss = new ServerSocket(6969);
@@ -50,11 +49,9 @@ public class PalawanClient extends Client {
 	}
 	
 	public void case1(ArrayList<String> transactions) throws Exception {
-		transactionId = 0;
 		for(String cur: transactions){
 			System.out.println(cur);
-			int id = getTransactionId();
-			new Thread(new TransactionThread(cur+"@"+id)).start();
+			new Thread(new TransactionThread(cur)).start();
 		}
 	}
 	
@@ -137,11 +134,6 @@ public class PalawanClient extends Client {
 	
 	public synchronized void unlockResultSet(){
 		resultSetReceived = true;
-	}
-	
-	public synchronized int getTransactionId(){
-		transactionId++;
-		return transactionId;
 	}
 	
 	class IncomingThread implements Runnable{
