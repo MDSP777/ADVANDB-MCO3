@@ -13,7 +13,10 @@ import com.sun.rowset.CachedRowSetImpl;
 import model.ResultSetWrapper;
 
 public class Server {
-	private ServerSocket ss;
+	private ServerSocket ssPalawan;
+	private ServerSocket ssMarinduque;
+	private ServerSocket ssCentral;
+	private ServerSocket ssShared;
 	private String mIp;
 	private String pIp;
 	private String cIp;
@@ -27,7 +30,14 @@ public class Server {
 
 	public Server() {
 		try {
-			ss = new ServerSocket(6969);
+			ssShared = new ServerSocket(6968);
+			ssPalawan = new ServerSocket(6969);
+			ssMarinduque = new ServerSocket(6970);
+			ssCentral = new ServerSocket(6971);
+
+			ssPalawan.setSoTimeout(10000);
+			ssMarinduque.setSoTimeout(10000);
+			ssCentral.setSoTimeout(10000);
 		} catch( IOException ioe ) {
 			ioe.printStackTrace();
 		}
@@ -38,7 +48,7 @@ public class Server {
 		Socket curr;
 		System.out.println("Starting...");
 		while(n<2){
-			curr = ss.accept();
+			curr = ssShared.accept();
 			String ip = curr.getInetAddress().getHostAddress();
 			DataInputStream dis = new DataInputStream(curr.getInputStream());
 			String name = dis.readUTF();
@@ -68,16 +78,19 @@ public class Server {
 		Socket curr;
 		while(true) {
 			try {
-				curr = ss.accept();
+				curr = ssShared.accept();
 				DataInputStream dis = new DataInputStream(curr.getInputStream());
 				String message = dis.readUTF();
 				System.out.println("GOT " + message);
 				if(message.equals("Palawan")) {
 					pIp = curr.getInetAddress().getHostAddress();
+					System.out.println("Palawan connected!");
 				} else if(message.equals("Marinduque")) {
 					mIp = curr.getInetAddress().getHostAddress();
+					System.out.println("Marinduque connected!");
 				} else if(message.equals("Central")) {
 					cIp = curr.getInetAddress().getHostAddress();
+					System.out.println("Central connected!");
 				} else if(message.contains("has died")) {
 					if(message.startsWith("Palawan")) {
 						pIp = null;
@@ -100,7 +113,7 @@ public class Server {
 									data.close();
 									
 									// wait for the data
-									data = ss.accept();
+									data = ssCentral.accept();
 									ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
 									CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
 									data.close();
@@ -121,7 +134,7 @@ public class Server {
 									
 									// wait for the data
 									System.out.println("Waiting for data...");
-									data = ss.accept();
+									data = ssMarinduque.accept();
 									ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
 									CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
 									ois.close();
@@ -162,7 +175,7 @@ public class Server {
 											
 											// receive confirmation from central
 											System.out.println("Waiting for confirmation from central...");
-											data = ss.accept();
+											data = ssCentral.accept();
 											DataInputStream din = new DataInputStream(data.getInputStream());
 											String ok = din.readUTF();
 											din.close();

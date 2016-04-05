@@ -31,9 +31,10 @@ public class PalawanClient extends Client {
 	private int isolationLevel = 4;
 	private String clientName = "Palawan";
 	private String dbName = "db_hpq_palawan";
+	private int sharedPortNo = 6968;
+	private int portNo = 6969;
 	private volatile HashMap<String, ArrayList<Entity>> rsMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
-	private volatile boolean resultSetReceived;
 	
 	public PalawanClient(String serverIp) throws IOException{
 		ss = new ServerSocket(6969);
@@ -41,7 +42,7 @@ public class PalawanClient extends Client {
 		
 		// send connection to Server
 		new Thread(new IncomingThread()).start();
-		Socket initSocket = new Socket(serverIp, 6969);
+		Socket initSocket = new Socket(serverIp, sharedPortNo);
 		DataOutputStream dout = new DataOutputStream(initSocket.getOutputStream());
 		dout.writeUTF(clientName);
 		initSocket.close();
@@ -71,7 +72,7 @@ public class PalawanClient extends Client {
 						ResultSet rs = executeRead(split[1]);
 						putIntoMap(split[3], rs);
 					} else {
-						Socket s = new Socket(serverIp, 6969);
+						Socket s = new Socket(serverIp, sharedPortNo);
 						DataOutputStream dout = new DataOutputStream(s.getOutputStream());
 						dout.writeUTF(cur);
 						dout.close();
@@ -88,7 +89,7 @@ public class PalawanClient extends Client {
 					executeWrite(split[1]);
 					System.out.println("Finished Writing!");
 					
-					Socket sk = new Socket(serverIp, 6969);
+					Socket sk = new Socket(serverIp, sharedPortNo);
 					DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 					dos.writeUTF(cur);
 					dos.close();
@@ -132,10 +133,6 @@ public class PalawanClient extends Client {
 		return false;
 	}
 	
-	public synchronized void unlockResultSet(){
-		resultSetReceived = true;
-	}
-	
 	class IncomingThread implements Runnable{
 
 		@Override
@@ -150,7 +147,6 @@ public class PalawanClient extends Client {
 	                    String[] split = msgin.split("@");
 	                    if(split[0].equals("Unable to read")){
 	                    	rsw = new CachedRowSetImpl();
-	                    	resultSetReceived = true;
 	                    } else if(split[0].startsWith("Sending data")){
 	                    	System.out.println("Receiving data...");
 	                    	s = ss.accept();
@@ -169,7 +165,7 @@ public class PalawanClient extends Client {
 		                    	CachedRowSetImpl rsw = new CachedRowSetImpl();
 		                    	rsw.populate(rs);
 		                    	
-		                    	Socket data = new Socket(serverIp, 6969);
+		                    	Socket data = new Socket(serverIp, portNo);
 								ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
 								oos.writeObject(rsw);
 								oos.close();
@@ -177,13 +173,13 @@ public class PalawanClient extends Client {
 		                    } else { 
 		                    	boolean success = executeWrite(split[1]);
 		                    	if(success){
-		                    		Socket sk = new Socket(serverIp, 6969);
+		                    		Socket sk = new Socket(serverIp, portNo);
 		                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 		                    		dos.writeUTF("OK");
 		                    		dos.close();
 		                    		sk.close();
 		                    	} else {
-		                    		Socket sk = new Socket(serverIp, 6969);
+		                    		Socket sk = new Socket(serverIp, portNo);
 		                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 		                    		dos.writeUTF("GG");
 		                    		dos.close();
@@ -235,7 +231,7 @@ public class PalawanClient extends Client {
 	}
 	
 	public void sendCrashMessage() throws UnknownHostException, IOException {
-		Socket sk = new Socket(serverIp, 6969);
+		Socket sk = new Socket(serverIp, portNo);
 		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 		dos.writeUTF(clientName + "has died.");
 		dos.close();
