@@ -53,7 +53,7 @@ public class MainFrame extends JFrame{
 			readPanel = new ReadPanel(transactionsPanel, branchName);
 			readPanel.setLocation(0, 0);
 			readPanel.setSize(250, 550);
-			writePanel = new WritePanel(transactionsPanel);
+			writePanel = new WritePanel(transactionsPanel, branchName);
 			writePanel.setLocation(250, 0);
 			writePanel.setSize(250, 150);
 			transactionsPanel.setLocation(250,  150);
