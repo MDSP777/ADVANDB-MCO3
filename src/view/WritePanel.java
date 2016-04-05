@@ -28,7 +28,7 @@ public class WritePanel extends JPanel{
 	private JRadioButton notCrash;
 	private ButtonGroup bg;
 	
-	public WritePanel(TransactionsPanel transactionsPanel) {
+	public WritePanel(TransactionsPanel transactionsPanel, String branchName) {
 		this.transactionsPanel = transactionsPanel;
 		btnAdd = new JButton("Add");
 		
@@ -81,6 +81,7 @@ public class WritePanel extends JPanel{
 				writeTransaction.setHouseholdID(tfHousehold.getText());
 				writeTransaction.setCalamity(cbCalamities.getSelectedItem().toString());
 				writeTransaction.setFrequency(tfFrequency.getText());
+				writeTransaction.setBranchName(branchName);
 				transactionsPanel.addTransaction(writeTransaction);
 			}
 			
