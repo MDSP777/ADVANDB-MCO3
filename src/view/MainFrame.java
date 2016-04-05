@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -51,7 +52,7 @@ public class MainFrame extends JFrame{
 			mainPanel = new JPanel();
 			mainPanel.setLayout(null);
 			
-			transactionsPanel = new TransactionsPanel();
+			transactionsPanel = new TransactionsPanel(this);
 			
 			isolationLevelPanel = new IsolationLevelPanel();
 			isolationLevelPanel.setLocation(0, 0);
@@ -66,7 +67,7 @@ public class MainFrame extends JFrame{
 			transactionsPanel.setSize(250, 400);
 			client = new PalawanClient(IPAddress);
 			transactionsPanel.setClient(client);
-			transactionListPanel = new TransactionListPanel();
+			transactionListPanel = new TransactionListPanel(this);
 			transactionListPanel.setLocation(500, 0);
 			transactionListPanel.setSize(865, 50);
 			resultPanel = new ResultPanel();
@@ -136,5 +137,13 @@ public class MainFrame extends JFrame{
 				
 			});
 		}
+	}
+	
+	public void updateTransactionList(ArrayList<String> transactions) {
+		transactionListPanel.update(transactions);
+	}
+	
+	public void updateTableById(String id) {
+		resultPanel.buildTableModel(transactionsPanel.getById(id));
 	}
 }

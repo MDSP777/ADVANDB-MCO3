@@ -11,20 +11,20 @@ import javax.swing.table.TableModel;
 public class ResultPanel extends JPanel{
 	
 	private JTable result;
-	private String[][] resultSet;
+	private Object[][] resultSet;
 	
 	public ResultPanel() {
 		this.setBorder(BorderFactory.createTitledBorder("Result"));
 	}
 	
-	public void buildTableModel(String[][] resultSet) {
+	public void buildTableModel(Object[][] resultSet) {
 		this.resultSet = resultSet;
 		result = new JTable(new DefaultTableModel(getRows(), getHeaders()));
 		this.add(new JScrollPane(result));
 	}
 	
-	public String[] getHeaders() {
-		String[] headers = new String[resultSet[0].length];
+	public Object[] getHeaders() {
+		Object[] headers = new Object[resultSet[0].length];
 		
 		for (int j = 0; j < resultSet[0].length; j++)
 			headers[j] = resultSet[0][j];
@@ -32,8 +32,8 @@ public class ResultPanel extends JPanel{
 		return headers;
 	}
 	
-	public String[][] getRows() {
-		String[][] data = new String[resultSet.length-1][resultSet[0].length];
+	public Object[][] getRows() {
+		Object[][] data = new Object[resultSet.length-1][resultSet[0].length];
 		
 		for (int i = 1; i < resultSet.length; i++) {
 			for (int j = 0; j < resultSet[i].length; j++){
