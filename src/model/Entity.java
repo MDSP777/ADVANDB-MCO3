@@ -1,6 +1,8 @@
 package model;
 
 public class Entity {
+	public static final int COLUMN_COUNT = 14;
+	
 	private int id;
 	private int mun;
 	private int zone;
@@ -165,6 +167,7 @@ public class Entity {
 				+ calam7_hwmny + ", calam8_hwmny=" + calam8_hwmny
 				+ ", calam9_hwmny=" + calam9_hwmny + "]";
 	}
-	
-	
+	public Object[] toArray() {
+		return new Object[]{id, mun, zone, brgy, purok, calam1_hwmny, calam2_hwmny,calam3_hwmny,calam4_hwmny,calam5_hwmny,calam6_hwmny,calam7_hwmny,calam8_hwmny,calam9_hwmny};
+	}
 }
