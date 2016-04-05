@@ -13,9 +13,22 @@ public class QueryGenerator {
 	}
 	
 	private static String generate(ReadTransaction transaction) {
-		String query = transaction.getBranchName()+"@SELECT * "
-				+ "FROM "
-						+ "db_hpq.hpq_hh H "
+		String query = transaction.getBranchName()+
+				"@SELECT H.id, "
+				+ "H.mun, "
+				+ "H.zone, "
+				+ "H.brgy, "
+				+ "H.purok, "
+				+ "H.calam1_hwmny, "
+				+ "H.calam2_hwmny, "
+				+ "H.calam3_hwmny, "
+				+ "H.calam4_hwmny, "
+				+ "H.calam5_hwmny, "
+				+ "H.calam6_hwmny, "
+				+ "H.calam7_hwmny, "
+				+ "H.calam8_hwmny, "
+				+ "H.calam9_hwmny "
+				+ "FROM db_hpq.hpq_hh H "
 				+ "WHERE id=id ";
 		
 		String harvest = "AND (";
