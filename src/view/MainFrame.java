@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -20,9 +21,11 @@ import socket.PalawanClient;
 public class MainFrame extends JFrame{
 
 	private JPanel mainPanel;
+	private IsolationLevelPanel isolationLevelPanel;
 	private ReadPanel readPanel;
 	private WritePanel writePanel;
 	private TransactionsPanel transactionsPanel;
+	private TransactionListPanel transactionListPanel;
 	private ResultPanel resultPanel;
 	private String IPAddress;
 	private String branchName;
@@ -50,22 +53,31 @@ public class MainFrame extends JFrame{
 			
 			transactionsPanel = new TransactionsPanel();
 			
+			isolationLevelPanel = new IsolationLevelPanel();
+			isolationLevelPanel.setLocation(0, 0);
+			isolationLevelPanel.setSize(250, 50);
 			readPanel = new ReadPanel(transactionsPanel, branchName);
-			readPanel.setLocation(0, 0);
-			readPanel.setSize(250, 550);
+			readPanel.setLocation(0, 75);
+			readPanel.setSize(250, 525);
 			writePanel = new WritePanel(transactionsPanel, branchName);
 			writePanel.setLocation(250, 0);
-			writePanel.setSize(250, 150);
-			transactionsPanel.setLocation(250,  150);
+			writePanel.setSize(250, 200);
+			transactionsPanel.setLocation(250, 200);
 			transactionsPanel.setSize(250, 400);
 			client = new PalawanClient(IPAddress);
 			transactionsPanel.setClient(client);
+			transactionListPanel = new TransactionListPanel();
+			transactionListPanel.setLocation(500, 0);
+			transactionListPanel.setSize(865, 50);
 			resultPanel = new ResultPanel();
-			resultPanel.setLocation(500, 0);
+			resultPanel.setLocation(500, 50);
 			resultPanel.setSize(865, 550);
+			mainPanel.add(isolationLevelPanel);
+			mainPanel.add(Box.createRigidArea(new Dimension(250, 25)));
 			mainPanel.add(readPanel);
 			mainPanel.add(writePanel);
 			mainPanel.add(transactionsPanel);
+			mainPanel.add(transactionListPanel);
 			mainPanel.add(resultPanel);
 			
 			this.add(mainPanel);
