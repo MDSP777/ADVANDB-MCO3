@@ -47,7 +47,7 @@ public class Server {
 		int n = 0;
 		Socket curr;
 		System.out.println("Starting...");
-		while(n<2){
+		while(n<3){
 			curr = ssShared.accept();
 			String ip = curr.getInetAddress().getHostAddress();
 			DataInputStream dis = new DataInputStream(curr.getInputStream());
@@ -259,6 +259,8 @@ public class Server {
 												}
 											}
 											String commitOrNot = "Rollback";
+											System.out.println(centralOk);
+											System.out.println(marinOk);
 											if("OK".equals(centralOk) && "OK".equals(marinOk)){
 												commitOrNot = "Commit";
 											}
