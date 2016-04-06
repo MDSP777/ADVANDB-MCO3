@@ -13,6 +13,7 @@ import javax.swing.JTextArea;
 
 import socket.Client;
 import socket.PalawanClient;
+
 import model.Entity;
 import model.QueryGenerator;
 import model.Transaction;
@@ -26,7 +27,7 @@ public class TransactionsPanel extends JPanel{
 	private ArrayList<String> transactionsList;
 	private int id = 0;
 	
-	public TransactionsPanel() {
+	public TransactionsPanel(MainFrame mainFrame) {
 		taTransactions = new JTextArea();
 		taTransactions.setAlignmentX(CENTER_ALIGNMENT);
 		
@@ -39,6 +40,16 @@ public class TransactionsPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					client.case1(transactionsList);
+					ArrayList<String> readTransactions = new ArrayList<String>();
+					for(String t : transactionsList) {
+						if(t.contains("SELECT")) {
+							readTransactions.add(t);
+						}
+					}
+					mainFrame.updateTransactionList(readTransactions);
+					transactions.removeAll(transactions);
+					transactionsList.removeAll(transactionsList);
+					taTransactions.setText("");
 					id = 0;
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -68,6 +79,19 @@ public class TransactionsPanel extends JPanel{
 	
 	public void setClient(PalawanClient c){
 		this.client = c;
+	}
+	
+	public Client getClient() {
+		return client;
+	}
+	
+	public Object[][] getById(String id) {
+		ArrayList<Entity> entities = client.getById(id);
+		Object data[][] = new Object[entities.size()][Entity.COLUMN_COUNT];
+		for(int i = 0; i < entities.size(); i++) {
+			data[i] = entities.get(i).toArray();
+		}
+		return data;
 	}
 }
 
