@@ -28,9 +28,9 @@ import dbutils.DBManager;
 
 public class Client {
 	
-	public static final String PALAWAN = "asdf";
-	public static final String MARINDUQUE = "ghjk";
-	public static final String CENTRAL = "zxcv";
+	public static final String PALAWAN = "Palawan";
+	public static final String MARINDUQUE = "Marinduque";
+	public static final String CENTRAL = "Central";
 	
 	private ServerSocket ss;
 	private String serverIp;
