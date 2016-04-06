@@ -87,6 +87,10 @@ public class TransactionsPanel extends JPanel{
 		return client;
 	}
 	
+	public void setClientPassword(String password) {
+		client.setPassword(password);
+	}
+	
 	public Object[][] getById(String id) {
 		ArrayList<Entity> entities = client.getById(id);
 		// TODO handle if entities is null (unable to read from other branches)

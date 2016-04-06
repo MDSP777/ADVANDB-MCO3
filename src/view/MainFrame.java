@@ -2,6 +2,8 @@ package view;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +31,7 @@ public class MainFrame extends JFrame{
 	private TransactionsPanel transactionsPanel;
 	private TransactionListPanel transactionListPanel;
 	private ResultPanel resultPanel;
+	private PasswordPanel passwordPanel;
 	private String IPAddress;
 	private String branchName;
 	private Client client;
@@ -73,6 +77,9 @@ public class MainFrame extends JFrame{
 			resultPanel = new ResultPanel();
 			resultPanel.setLocation(500, 50);
 			resultPanel.setSize(865, 550);
+			passwordPanel = new PasswordPanel(transactionsPanel);
+			passwordPanel.setLocation(0, 600);
+			passwordPanel.setSize(250, 100);
 			mainPanel.add(isolationLevelPanel);
 			mainPanel.add(Box.createRigidArea(new Dimension(250, 25)));
 			mainPanel.add(readPanel);
@@ -80,6 +87,7 @@ public class MainFrame extends JFrame{
 			mainPanel.add(transactionsPanel);
 			mainPanel.add(transactionListPanel);
 			mainPanel.add(resultPanel);
+			mainPanel.add(passwordPanel);
 			
 			this.add(mainPanel);
 			this.setTitle("ADVANDB MC03");
