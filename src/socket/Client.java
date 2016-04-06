@@ -43,6 +43,7 @@ public class Client {
 	private volatile HashMap<String, Connection> connectionsMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
 	private volatile int nRunningTransactions;
+	private String password;
 	
 	public Client(String serverIp, String branchName) throws IOException{
 		ss = new ServerSocket(6969);
@@ -67,6 +68,10 @@ public class Client {
 		dout.writeUTF(clientName);
 		initSocket.close();
 		
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 	public void case1(ArrayList<String> transactions) throws Exception {
@@ -111,7 +116,12 @@ public class Client {
 						s.close();
 					}
 				} else if(split[1].startsWith("UPDATE")) {
-					Connection connection = new DBManager(dbName).getConnection();
+					Connection connection;
+					if(password == null) {
+						connection = new DBManager(dbName).getConnection();
+					} else {
+						connection = new DBManager(dbName, password).getConnection();
+					}
 					Statement statement = null;
 					int[] results = null;
 					try {
@@ -161,7 +171,12 @@ public class Client {
 	}
 	
 	ResultSet executeRead(String query){
-		Connection connection = new DBManager(dbName).getConnection();
+		Connection connection;
+		if(password == null) {
+			connection = new DBManager(dbName).getConnection();
+		} else {
+			connection = new DBManager(dbName, password).getConnection();
+		}
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try {
@@ -239,7 +254,12 @@ public class Client {
 		                    } else { 
 		                    	System.out.println("Starting write");
 		                    	boolean success = true;
-		                    	Connection connection = new DBManager(dbName).getConnection();
+		                    	Connection connection;
+		    					if(password == null) {
+		    						connection = new DBManager(dbName).getConnection();
+		    					} else {
+		    						connection = new DBManager(dbName, password).getConnection();
+		    					}
 		    					Statement statement = connection.createStatement();
 		    					int[] results = null;
 		    					try {

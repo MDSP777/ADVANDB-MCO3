@@ -24,16 +24,14 @@ public class WritePanel extends JPanel{
 	private JTextField tfFrequency;
 	private TransactionsPanel transactionsPanel;
 	private JButton btnAdd;
-	private JRadioButton toCrash;
-	private JRadioButton notCrash;
-	private ButtonGroup bg;
 	
 	public WritePanel(TransactionsPanel transactionsPanel, String branchName) {
 		this.transactionsPanel = transactionsPanel;
-		btnAdd = new JButton("Add");
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.setBorder(BorderFactory.createTitledBorder("Write"));
+		
+		btnAdd = new JButton("Add");
 		
 		JPanel panelHousehold = new JPanel();
 		panelHousehold.setLayout(new BoxLayout(panelHousehold, BoxLayout.LINE_AXIS));
@@ -59,18 +57,10 @@ public class WritePanel extends JPanel{
 		
 		JPanel panelCrash = new JPanel();
 		panelCrash.setLayout(new BoxLayout(panelCrash, BoxLayout.LINE_AXIS));
-		toCrash = new JRadioButton("To Crash");
-		notCrash = new JRadioButton("Not to Crash");
-		ButtonGroup bg = new ButtonGroup();
-		bg.add(toCrash);
-		bg.add(notCrash);
-		panelCrash.add(toCrash);
-		panelCrash.add(notCrash);
 		
 		this.add(panelHousehold);
 		this.add(panelCalamity);
 		this.add(panelCrash);
-		this.add(btnAdd);
 		
 		btnAdd.addActionListener(new ActionListener() {
 
