@@ -11,16 +11,24 @@ import javax.swing.table.TableModel;
 public class ResultPanel extends JPanel{
 	
 	private JTable result;
+	private JPanel tablePane;
+	private JScrollPane scrollPane;
 	private Object[][] resultSet;
 	
 	public ResultPanel() {
-		this.setBorder(BorderFactory.createTitledBorder("Result"));
+		tablePane = new JPanel();
+		tablePane.setBorder(BorderFactory.createTitledBorder("Result"));
+		this.add(tablePane);
 	}
 	
 	public void buildTableModel(Object[][] resultSet) {
 		this.resultSet = resultSet;
+		this.remove(tablePane);
 		result = new JTable(new DefaultTableModel(getRows(), getHeaders()));
-		this.add(new JScrollPane(result));
+		scrollPane = new JScrollPane(result);
+		tablePane.add(scrollPane);
+		this.revalidate();
+		this.repaint();
 	}
 	
 	public Object[] getHeaders() {
