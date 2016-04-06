@@ -237,6 +237,7 @@ public class Client {
 								oos.close();
 								data.close();
 		                    } else { 
+		                    	System.out.println("Starting write");
 		                    	boolean success = true;
 		                    	Connection connection = new DBManager(dbName).getConnection();
 		    					Statement statement = connection.createStatement();
@@ -250,12 +251,14 @@ public class Client {
 		    						success = false;
 		    					}
 		                    	if(success){
+		                    		System.out.println("Transaction success!");
 		                    		Socket sk = new Socket(serverIp, portNo);
 		                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 		                    		dos.writeUTF("OK");
 		                    		dos.close();
 		                    		sk.close();
 		                    	} else {
+		                    		System.out.println("Transaction fail!");
 		                    		Socket sk = new Socket(serverIp, portNo);
 		                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 		                    		dos.writeUTF("GG");
@@ -271,13 +274,16 @@ public class Client {
 		                    		skt.close();
 		                    		
 		                    		if("Commit".equals(result)){
+		                    			System.out.println("Committing...");
 			                    		statement.execute("commit;");
 		                    		} else {
+		                    			System.out.println("Rolling back...");
 		                    			statement.execute("rollback;");
 		                    		}
 		                    	} else {
 		                    		statement.execute("commit;");
 		                    	}
+		                    	System.out.println("Closing connection...");
 		                    	connection.close();
 		                    }
 	                    }
