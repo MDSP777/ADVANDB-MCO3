@@ -1,6 +1,10 @@
 package view;
 
+import java.awt.Dimension;
+
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -13,24 +17,30 @@ import model.Entity;
 public class ResultPanel extends JPanel{
 	
 	private JTable result;
-	private JPanel tablePane;
-	private JScrollPane scrollPane;
 	private Object[][] resultSet;
 	
 	public ResultPanel() {
-		tablePane = new JPanel();
+		this.setLayout(null);
 		this.setBorder(BorderFactory.createTitledBorder("Result"));
 	}
 	
 	public void buildTableModel(Object[][] resultSet) {
-		this.resultSet = resultSet;
-		this.remove(tablePane);
-		result = new JTable(new DefaultTableModel(getRows(), getHeaders()));
-		if(scrollPane != null)
-			tablePane.remove(scrollPane);
-		scrollPane = new JScrollPane(result);
-		tablePane.add(scrollPane);
-		this.add(tablePane);
+		if (resultSet != null) {
+			this.resultSet = resultSet;
+			result = new JTable(new DefaultTableModel(getRows(), getHeaders()));
+			this.removeAll();
+			JScrollPane scrollPane = new JScrollPane(result);
+			scrollPane.setSize(850, 520);
+			scrollPane.setLocation(10, 20);
+			this.add(scrollPane);
+			
+		} else {
+			this.removeAll();
+			JLabel lblResult = new JLabel("Unable to retrieve data.");
+			lblResult.setLocation(380, 250);
+			lblResult.setSize(300, 30);
+			this.add(lblResult);
+		}
 		this.revalidate();
 		this.repaint();
 	}
@@ -40,11 +50,11 @@ public class ResultPanel extends JPanel{
 	}
 	
 	public Object[][] getRows() {
-		Object[][] data = new Object[resultSet.length-1][Entity.COLUMN_COUNT];
+		Object[][] data = new Object[resultSet.length][Entity.COLUMN_COUNT];
 		
-		for (int i = 1; i < resultSet.length; i++) {
+		for (int i = 0; i < resultSet.length; i++) {
 			for (int j = 0; j < resultSet[i].length; j++){
-				data[i-1][j] = resultSet[i][j];
+				data[i][j] = resultSet[i][j];
 			}
 		}
 		

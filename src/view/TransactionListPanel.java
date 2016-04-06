@@ -17,10 +17,16 @@ public class TransactionListPanel extends JPanel implements ActionListener{
 		transactionList = new JComboBox();
 		transactionList.addActionListener(this);
 		this.add(transactionList);
+		update(new ArrayList<String>());
 		this.mainFrame = mainFrame;
 	}
 	
 	public void update(ArrayList<String> transactions) {
+		if(transactions.isEmpty()){
+			transactionList.setVisible(false);
+		} else {
+			transactionList.setVisible(true);
+		}
 		transactionList.removeAllItems();
 		for(String s : transactions) {
 			transactionList.addItem(s);
@@ -31,7 +37,8 @@ public class TransactionListPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource() == transactionList) {
-			mainFrame.updateTableById(transactionList.getSelectedItem().toString().split("@")[3]);
+			if(transactionList.getSelectedItem() != null)
+				mainFrame.updateTableById(transactionList.getSelectedItem().toString().split("@")[1]);
 		}
 	}
 }
