@@ -264,21 +264,25 @@ public class Server {
 											if("OK".equals(centralOk) && "OK".equals(marinOk)){
 												commitOrNot = "Commit";
 											}
-											// tell central to commit
-											System.out.println("Sending commit command to central...");
-											Socket data = new Socket(cIp, 6969);
-											DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF(commitOrNot);
-											dos.close();
-											data.close();
+											if("OK".equals(centralOk)){
+												// tell central to commit
+												System.out.println("Sending commit command to central...");
+												Socket data = new Socket(cIp, 6969);
+												DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+												dos.writeUTF(commitOrNot);
+												dos.close();
+												data.close();
+											}
 											
-											// tell marinduque to commit
-											System.out.println("Sending commit command to marinduque...");
-											data = new Socket(mIp, 6969);
-											dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF(commitOrNot);
-											dos.close();
-											data.close();
+											if("OK".equals(marinOk)){
+												// tell marinduque to commit
+												System.out.println("Sending commit command to marinduque...");
+												Socket data = new Socket(mIp, 6969);
+												DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+												dos.writeUTF(commitOrNot);
+												dos.close();
+												data.close();
+											}
 										}
 										
 									}
