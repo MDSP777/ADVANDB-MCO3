@@ -16,6 +16,7 @@ public class TransactionListPanel extends JPanel implements ActionListener{
 		this.setBorder(BorderFactory.createTitledBorder("Transaction List"));
 		transactionList = new JComboBox();
 		transactionList.addActionListener(this);
+		this.add(transactionList);
 		this.mainFrame = mainFrame;
 	}
 	

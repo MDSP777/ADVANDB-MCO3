@@ -40,6 +40,7 @@ public class TransactionsPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					client.case1(transactionsList);
+					System.out.println("Finished executing SQL statements");
 					ArrayList<String> readTransactions = new ArrayList<String>();
 					for(String t : transactionsList) {
 						if(t.contains("SELECT")) {

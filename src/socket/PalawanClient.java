@@ -44,20 +44,27 @@ public class PalawanClient extends Client {
 		this.serverIp = serverIp;
 		
 		// send connection to Server
-//		new Thread(new IncomingThread()).start();
-//		Socket initSocket = new Socket(serverIp, sharedPortNo);
-//		DataOutputStream dout = new DataOutputStream(initSocket.getOutputStream());
-//		dout.writeUTF(clientName);
-//		initSocket.close();
+		new Thread(new IncomingThread()).start();
+		Socket initSocket = new Socket(serverIp, sharedPortNo);
+		DataOutputStream dout = new DataOutputStream(initSocket.getOutputStream());
+		dout.writeUTF(clientName);
+		initSocket.close();
 		
 	}
 	
 	public void case1(ArrayList<String> transactions) throws Exception {
+//		nRunningTransactions = 0;
+		ArrayList<Thread> threads = new ArrayList<>();
 		for(String cur: transactions){
 			System.out.println("Running: "+cur);
-			new Thread(new TransactionThread(cur)).start();
+			Thread t = new Thread(new TransactionThread(cur));
+			threads.add(t);
+			t.start();
 		}
-		while(nRunningTransactions<transactions.size());
+//		while(nRunningTransactions<transactions.size());
+		for(Thread t: threads){
+			t.join();
+		}
 	}
 	
 	class TransactionThread implements Runnable {
@@ -72,7 +79,7 @@ public class PalawanClient extends Client {
 			try{
 				String[] split = cur.split("@");
 				if(split.length>=2 && split[1].startsWith("SELECT")){
-					if(clientName.equals(split[2])){
+					if(clientName.equals(split[2]) || "Central".equals(clientName)){
 						ResultSet rs = executeRead(split[1]);
 						putIntoMap(split[3], rs);
 					} else {
@@ -82,11 +89,8 @@ public class PalawanClient extends Client {
 						dout.close();
 						s.close();
 						
-						while(!rsMap.containsKey(split[2]));
-						ResultSet rs = rsw.getOriginal();
-						while(rs.next()){
-							System.out.println(rs.getInt(1));
-						}
+						while(!rsMap.containsKey(split[3]));
+						System.out.println("Received data!");
 						s.close();
 					}
 				} else if(split[1].startsWith("UPDATE")) {
@@ -263,7 +267,7 @@ public class PalawanClient extends Client {
 	}
 	
 	public void sendCrashMessage() throws UnknownHostException, IOException {
-		Socket sk = new Socket(serverIp, portNo);
+		Socket sk = new Socket(serverIp, sharedPortNo);
 		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 		dos.writeUTF(clientName + " has died.");
 		dos.close();
