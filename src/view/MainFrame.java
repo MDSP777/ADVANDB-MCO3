@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import socket.PalawanClient;
+import socket.Client;
 
 public class MainFrame extends JFrame{
 
@@ -30,14 +30,14 @@ public class MainFrame extends JFrame{
 	private ResultPanel resultPanel;
 	private String IPAddress;
 	private String branchName;
-	private PalawanClient client;
+	private Client client;
 	
 	public MainFrame() throws IOException {
 		JPanel serverPanel = new JPanel();
 		serverPanel.setLayout(new BoxLayout(serverPanel, BoxLayout.PAGE_AXIS));
 		JLabel lblAddress = new JLabel("IP Address: ");
 		JTextField tfAddress = new JTextField();
-		JComboBox cbDatabases = new JComboBox(new String[]{"Palawan", "Marinduque", "Central"});
+		JComboBox cbDatabases = new JComboBox(new String[]{Client.PALAWAN, Client.MARINDUQUE, Client.CENTRAL});
 		
 		serverPanel.add(lblAddress);
 		serverPanel.add(tfAddress);
@@ -65,7 +65,7 @@ public class MainFrame extends JFrame{
 			writePanel.setSize(250, 200);
 			transactionsPanel.setLocation(250, 200);
 			transactionsPanel.setSize(250, 400);
-			client = new PalawanClient(IPAddress);
+			client = new Client(IPAddress, branchName);
 			transactionsPanel.setClient(client);
 			transactionListPanel = new TransactionListPanel(this);
 			transactionListPanel.setLocation(500, 0);

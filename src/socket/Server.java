@@ -104,7 +104,7 @@ public class Server {
 						case "Palawan":
 							if(split[1].startsWith("SELECT")){
 								if (cIp != null){ 
-									// send a request for data from central
+									// send a request for data from marinduque
 									Socket data = new Socket(cIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
 									dos.writeUTF(message);
@@ -112,12 +112,21 @@ public class Server {
 									data.close();
 									
 									// wait for the data
-									data = ssCentral.accept();
+									// TODO what if Marinduque dies here? Need code to send unable to read message
+									System.out.println("Waiting for data...");
+									data = ssMarinduque.accept();
 									ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
 									CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
+									ois.close();
 									data.close();
 									
 									// send data back to Palawan
+									System.out.println("Got data! Sending back to requester...");
+									data = new Socket(pIp, 6969);
+									dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF("Sending data@"+split[3]);
+									dos.close();
+									data.close();
 									data = new Socket(pIp, 6969);
 									ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
 									oos.writeObject(rsw);
