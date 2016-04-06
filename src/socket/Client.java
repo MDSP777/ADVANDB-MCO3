@@ -113,16 +113,20 @@ public class Client {
 				} else if(split[1].startsWith("UPDATE")) {
 					Connection connection = new DBManager(dbName).getConnection();
 					Statement statement = null;
+					int[] results;
 					try {
 						statement = connection.createStatement();
 						statement.addBatch("Start transaction;");
 						statement.addBatch(split[1]);
-						statement.executeBatch();
+						results = statement.executeBatch();
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
 					System.out.println("Finished Writing!");
 					
+					// TODO check if results[1] affected any rows
+					// if 0, meaning palawan is attempting to write to marinduque / vice versa
+					// else palawan -> palawan / marinduque -> marinduque
 					Socket sk = new Socket(serverIp, sharedPortNo);
 					DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
 					dos.writeUTF(cur);
@@ -181,7 +185,7 @@ public class Client {
 	                    System.out.println("Received "+msgin);
 	                    String[] split = msgin.split("@");
 	                    if(split[0].equals("Unable to read")){
-	                    	rsw = new CachedRowSetImpl();
+	                    	putNullResult(split[1]);
 	                    } else if(split[0].startsWith("Sending data")){
 	                    	System.out.println("Receiving data...");
 	                    	s = ss.accept();
@@ -241,10 +245,16 @@ public class Client {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             } 
 		}
+
+		
 		
 	}
 	
-	public synchronized void putIntoMap(String id, ResultSet rs){
+	private synchronized void putNullResult(String id) {
+		rsMap.put(id, null);
+	}
+	
+	private synchronized void putIntoMap(String id, ResultSet rs){
 		ArrayList<Entity> e = new ArrayList<>();
 		try {
 			while(rs.next()){

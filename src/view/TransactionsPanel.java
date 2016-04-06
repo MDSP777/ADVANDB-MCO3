@@ -87,6 +87,7 @@ public class TransactionsPanel extends JPanel{
 	
 	public Object[][] getById(String id) {
 		ArrayList<Entity> entities = client.getById(id);
+		// TODO handle if entities is null (unable to read from other branches)
 		Object data[][] = new Object[entities.size()][Entity.COLUMN_COUNT];
 		for(int i = 0; i < entities.size(); i++) {
 			data[i] = entities.get(i).toArray();

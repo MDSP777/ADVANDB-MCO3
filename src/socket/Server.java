@@ -35,9 +35,9 @@ public class Server {
 			ssMarinduque = new ServerSocket(6970);
 			ssCentral = new ServerSocket(6971);
 
-			ssPalawan.setSoTimeout(10000);
-			ssMarinduque.setSoTimeout(10000);
-			ssCentral.setSoTimeout(10000);
+			ssPalawan.setSoTimeout(20000);
+			ssMarinduque.setSoTimeout(20000);
+			ssCentral.setSoTimeout(20000);
 		} catch( IOException ioe ) {
 			ioe.printStackTrace();
 		}
@@ -103,8 +103,9 @@ public class Server {
 					switch(split[0]){
 						case "Palawan":
 							if(split[1].startsWith("SELECT")){
+								boolean retrieveSuccess = false;
 								if (cIp != null){ 
-									// send a request for data from marinduque
+									// send a request for data to central
 									Socket data = new Socket(cIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
 									dos.writeUTF(message);
@@ -112,28 +113,33 @@ public class Server {
 									data.close();
 									
 									// wait for the data
-									// TODO what if Marinduque dies here? Need code to send unable to read message
-									System.out.println("Waiting for data...");
-									data = ssMarinduque.accept();
-									ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
-									CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
-									ois.close();
-									data.close();
-									
-									// send data back to Palawan
-									System.out.println("Got data! Sending back to requester...");
-									data = new Socket(pIp, 6969);
-									dos = new DataOutputStream(data.getOutputStream());
-									dos.writeUTF("Sending data@"+split[3]);
-									dos.close();
-									data.close();
-									data = new Socket(pIp, 6969);
-									ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
-									oos.writeObject(rsw);
-									oos.close();
-									data.close();
-								} else if(mIp != null){ 
-									// send a request for data from marinduque
+									try{
+										System.out.println("Waiting for data from central...");
+										data = ssCentral.accept();
+										ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
+										CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
+										ois.close();
+										data.close();
+										
+										// send data back to Palawan
+										System.out.println("Got data! Sending back to requester...");
+										data = new Socket(pIp, 6969);
+										dos = new DataOutputStream(data.getOutputStream());
+										dos.writeUTF("Sending data@"+split[3]);
+										dos.close();
+										data.close();
+										data = new Socket(pIp, 6969);
+										ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
+										oos.writeObject(rsw);
+										oos.close();
+										data.close();
+										retrieveSuccess = true;
+									} catch (Exception e){
+										System.out.println("Timed out. Attempting to retrieve data from Marinduque...");
+									}
+								}
+								if(!retrieveSuccess && mIp != null){ 
+									// send a request for data to marinduque
 									Socket data = new Socket(mIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
 									dos.writeUTF(message);
@@ -141,27 +147,148 @@ public class Server {
 									data.close();
 									
 									// wait for the data
-									// TODO what if Marinduque dies here? Need code to send unable to read message
-									System.out.println("Waiting for data...");
-									data = ssMarinduque.accept();
-									ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
-									CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
-									ois.close();
-									data.close();
-									
-									// send data back to Palawan
-									System.out.println("Got data! Sending back to requester...");
-									data = new Socket(pIp, 6969);
-									dos = new DataOutputStream(data.getOutputStream());
-									dos.writeUTF("Sending data@"+split[3]);
+									try{
+										System.out.println("Waiting for data...");
+										data = ssMarinduque.accept();
+										ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
+										CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
+										ois.close();
+										data.close();
+										
+										// send data back to Palawan
+										System.out.println("Got data! Sending back to requester...");
+										data = new Socket(pIp, 6969);
+										dos = new DataOutputStream(data.getOutputStream());
+										dos.writeUTF("Sending data@"+split[3]);
+										dos.close();
+										data.close();
+										data = new Socket(pIp, 6969);
+										ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
+										oos.writeObject(rsw);
+										oos.close();
+										data.close();
+										retrieveSuccess = true;
+									} catch(Exception e){
+										System.out.println("Timed out waiting for data from Marinduque. Unable to read");
+									}
+								} 
+								if(!retrieveSuccess){ // both are dead
+									System.out.println("Failed to retrieve from both sources.");
+									Socket data = new Socket(pIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF("Unable to read@"+split[3]);
 									dos.close();
 									data.close();
-									data = new Socket(pIp, 6969);
-									ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
-									oos.writeObject(rsw);
-									oos.close();
+								}
+							// code for writing
+							} else if(split[1].startsWith("UPDATE")) {
+								// TODO we might still want to handle Palawan writing to Marinduque
+								if(cIp != null){ 
+									// send update request to central 
+									System.out.println("Sending request to central...");
+									Socket data = new Socket(cIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(message);
+									dos.close();
 									data.close();
-								} else { // both are dead
+									
+									// receive confirmation from central
+									System.out.println("Waiting for confirmation from central...");
+									data = ssCentral.accept();
+									DataInputStream din = new DataInputStream(data.getInputStream());
+									String ok = din.readUTF();
+									din.close();
+									data.close();
+									
+									// send ok to palawan
+									System.out.println("Received confirmation: "+ok);
+									data = new Socket(pIp, 6969);
+									dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(ok+"@"+split[2]);
+									dos.close();
+									data.close();
+								} else { // central is dead
+									Socket data = new Socket(pIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF("GG@"+split[2]);
+									dos.close();
+									data.close();
+								}
+							}
+							break;
+						case "Marinduque":
+							if(split[1].startsWith("SELECT")){
+								boolean retrieveSuccess = false;
+								if (cIp != null){ 
+									// send a request for data from Central
+									Socket data = new Socket(cIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(message);
+									dos.close();
+									data.close();
+									
+									// wait for the data
+									try{
+										System.out.println("Waiting for data from central...");
+										data = ssCentral.accept();
+										ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
+										CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
+										ois.close();
+										data.close();
+										
+										// send data back to Marinduque
+										System.out.println("Got data! Sending back to requester...");
+										data = new Socket(mIp, 6969);
+										dos = new DataOutputStream(data.getOutputStream());
+										dos.writeUTF("Sending data@"+split[3]);
+										dos.close();
+										data.close();
+										data = new Socket(mIp, 6969);
+										ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
+										oos.writeObject(rsw);
+										oos.close();
+										data.close();
+										retrieveSuccess = true;
+									} catch (Exception e){
+										System.out.println("Timed out. Attempting to retrieve data from Palawan...");
+									}
+								}
+								if(!retrieveSuccess && pIp != null){ 
+									// send a request for data from Palawan
+									Socket data = new Socket(pIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(message);
+									dos.close();
+									data.close();
+									
+									// wait for the data
+									try{
+										System.out.println("Waiting for data...");
+										data = ssPalawan.accept();
+										ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
+										CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
+										ois.close();
+										data.close();
+										
+										// send data back to Marinduque
+										System.out.println("Got data! Sending back to requester...");
+										data = new Socket(mIp, 6969);
+										dos = new DataOutputStream(data.getOutputStream());
+										dos.writeUTF("Sending data@"+split[3]);
+										dos.close();
+										data.close();
+										data = new Socket(mIp, 6969);
+										ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
+										oos.writeObject(rsw);
+										oos.close();
+										data.close();
+										retrieveSuccess = true;
+									} catch(Exception e){
+										System.out.println("Timed out waiting for data from Marinduque. Unable to read");
+									}
+								} 
+								if(!retrieveSuccess){ // both are dead
+									System.out.println("Failed to retrieve from both sources.");
 									Socket data = new Socket(mIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
 									dos.writeUTF("Unable to read@"+split[3]);
@@ -170,55 +297,75 @@ public class Server {
 								}
 							// code for writing
 							} else if(split[1].startsWith("UPDATE")) {
-								switch(split[0]){
-									case "Palawan":
-										if(cIp != null){ 
-											// send update request to central 
-											System.out.println("Sending request to central...");
-											Socket data = new Socket(cIp, 6969);
-											DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF(message);
-											dos.close();
-											data.close();
-											
-											// receive confirmation from central
-											
-											System.out.println("Waiting for confirmation from central...");
-											data = ssCentral.accept();
-											DataInputStream din = new DataInputStream(data.getInputStream());
-											String ok = din.readUTF();
-											din.close();
-											data.close();
-											
-											// send ok to palawan
-											System.out.println("Received confirmation: "+ok);
-											data = new Socket(pIp, 6969);
-											dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF(ok+"@"+split[2]);
-											dos.close();
-											data.close();
-										} else { // central is dead
-											Socket data = new Socket(pIp, 6969);
-											DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF("GG@"+split[2]);
-											dos.close();
-											data.close();
-										}
-										break;
-									case "Marinduque":
-										
-										break;
-									case "Central":
-										
-										break;
+								// TODO we might still want to handle Marinduque writing to Palawan
+								if(cIp != null){ 
+									// send update request to central 
+									System.out.println("Sending request to central...");
+									Socket data = new Socket(cIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(message);
+									dos.close();
+									data.close();
+									
+									// receive confirmation from central
+									System.out.println("Waiting for confirmation from central...");
+									data = ssCentral.accept();
+									DataInputStream din = new DataInputStream(data.getInputStream());
+									String ok = din.readUTF();
+									din.close();
+									data.close();
+									
+									// send ok to Marinduque
+									System.out.println("Received confirmation: "+ok);
+									data = new Socket(mIp, 6969);
+									dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(ok+"@"+split[2]);
+									dos.close();
+									data.close();
+								} else { // central is dead
+									Socket data = new Socket(mIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF("GG@"+split[2]);
+									dos.close();
+									data.close();
 								}
 							}
 							break;
-						case "Marinduque":
-							
-							break;
 						case "Central":
-	
+							if(split[1].startsWith("UPDATE")) {
+								// TODO we might still want to handle Palawan writing to Marinduque
+								if(cIp != null){ 
+									// send update request to central 
+									System.out.println("Sending request to central...");
+									Socket data = new Socket(cIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(message);
+									dos.close();
+									data.close();
+									
+									// receive confirmation from central
+									System.out.println("Waiting for confirmation from central...");
+									data = ssCentral.accept();
+									DataInputStream din = new DataInputStream(data.getInputStream());
+									String ok = din.readUTF();
+									din.close();
+									data.close();
+									
+									// send ok to palawan
+									System.out.println("Received confirmation: "+ok);
+									data = new Socket(pIp, 6969);
+									dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(ok+"@"+split[2]);
+									dos.close();
+									data.close();
+								} else { // central is dead
+									Socket data = new Socket(pIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF("GG@"+split[2]);
+									dos.close();
+									data.close();
+								}
+							}
 							break;
 					}
 				}
@@ -228,14 +375,4 @@ public class Server {
 		}
 	}
 
-	public void sendMessage(Socket s,String message) {
-		try {
-			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-			dos.writeUTF(message);
-			dos.close();
-			s.close();
-		} catch( IOException ioe ) {
-			ioe.printStackTrace();
-		}
-	}
 }

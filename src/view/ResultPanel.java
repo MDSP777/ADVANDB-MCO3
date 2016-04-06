@@ -20,15 +20,17 @@ public class ResultPanel extends JPanel{
 	public ResultPanel() {
 		tablePane = new JPanel();
 		this.setBorder(BorderFactory.createTitledBorder("Result"));
-		this.add(tablePane);
 	}
 	
 	public void buildTableModel(Object[][] resultSet) {
 		this.resultSet = resultSet;
 		this.remove(tablePane);
 		result = new JTable(new DefaultTableModel(getRows(), getHeaders()));
+		if(scrollPane != null)
+			tablePane.remove(scrollPane);
 		scrollPane = new JScrollPane(result);
 		tablePane.add(scrollPane);
+		this.add(tablePane);
 		this.revalidate();
 		this.repaint();
 	}
@@ -38,7 +40,7 @@ public class ResultPanel extends JPanel{
 	}
 	
 	public Object[][] getRows() {
-		Object[][] data = new Object[resultSet.length-1][resultSet[0].length];
+		Object[][] data = new Object[resultSet.length-1][Entity.COLUMN_COUNT];
 		
 		for (int i = 1; i < resultSet.length; i++) {
 			for (int j = 0; j < resultSet[i].length; j++){
