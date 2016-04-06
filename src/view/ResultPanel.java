@@ -19,7 +19,7 @@ public class ResultPanel extends JPanel{
 	
 	public ResultPanel() {
 		tablePane = new JPanel();
-		tablePane.setBorder(BorderFactory.createTitledBorder("Result"));
+		this.setBorder(BorderFactory.createTitledBorder("Result"));
 		this.add(tablePane);
 	}
 	

@@ -17,9 +17,9 @@ public class Server {
 	private ServerSocket ssMarinduque;
 	private ServerSocket ssCentral;
 	private ServerSocket ssShared;
-	private String mIp;
-	private String pIp;
-	private String cIp;
+	private String mIp = null;
+	private String pIp = null;
+	private String cIp = null;
 	public static final String SERVER_NAME = "Server";
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {

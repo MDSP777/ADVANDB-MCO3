@@ -190,6 +190,9 @@ public class PalawanClient extends Client {
 	                    } else {
 		                    if(split[1].startsWith("SELECT")){
 		                    	ResultSet rs = executeRead(split[1]);
+		                    	if(rs==null){
+		                    		// TODO send crash message
+		                    	}
 		                    	CachedRowSetImpl rsw = new CachedRowSetImpl();
 		                    	rsw.populate(rs);
 		                    	
