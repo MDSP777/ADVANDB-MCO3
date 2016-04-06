@@ -11,7 +11,10 @@ public class DBManager {
 	private String username;
 	private String password;
 	
+<<<<<<< HEAD
 	
+=======
+>>>>>>> origin/master
 	public DBManager(String dbName, String password) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
