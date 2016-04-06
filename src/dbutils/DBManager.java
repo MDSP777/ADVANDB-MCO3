@@ -11,6 +11,19 @@ public class DBManager {
 	private String username;
 	private String password;
 	
+	public DBManager(String dbName, String password) {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		this.driverName = "com.mysql.jdbc.DriverManager"; //com.mysql.jdbc.DriverManager
+		this.url = "jdbc:mysql://127.0.0.1:3306/"; //jdbc.mysql://127.0.0.1:3306/
+		this.dbName = dbName; //db_hpq
+		this.username = "root"; //root
+		this.password = password;
+	}
+	
 	public DBManager(String dbName) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
