@@ -246,9 +246,9 @@ public class Server {
 												dos.close();
 												data.close();
 												
-												// receive confirmation from central
-												System.out.println("Waiting for confirmation from central...");
-												data = ssCentral.accept();
+												// receive confirmation from marinduque
+												System.out.println("Waiting for confirmation from marinduque...");
+												data = ssMarinduque.accept();
 												DataInputStream din = new DataInputStream(data.getInputStream());
 												marinOk = din.readUTF();
 												din.close();

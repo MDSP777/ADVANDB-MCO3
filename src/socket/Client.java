@@ -270,6 +270,7 @@ public class Client {
 		                    		Socket skt = ss.accept();
 		                    		DataInputStream dis = new DataInputStream(skt.getInputStream());
 		                    		String result = dis.readUTF();
+		                    		System.out.println("Received commit command "+result);
 		                    		dis.close();
 		                    		skt.close();
 		                    		
