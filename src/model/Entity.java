@@ -2,7 +2,8 @@ package model;
 
 public class Entity {
 	public static final int COLUMN_COUNT = 14;
-	
+	public static final String[] HEADERS = { "id", "mun", "zone", "brgy", "purok", "bagyo", "baha", "tagtuyot",
+			"lindol", "volcano", "landslide", "tsunami", "sunog", "forestfire" };
 	private int id;
 	private int mun;
 	private int zone;
@@ -17,11 +18,10 @@ public class Entity {
 	private int calam7_hwmny;
 	private int calam8_hwmny;
 	private int calam9_hwmny;
-	
-	public Entity(int id, int mun, int zone, int brgy, int purok,
-			int calam1_hwmny, int calam2_hwmny, int calam3_hwmny,
-			int calam4_hwmny, int calam5_hwmny, int calam6_hwmny,
-			int calam7_hwmny, int calam8_hwmny, int calam9_hwmny) {
+
+	public Entity(int id, int mun, int zone, int brgy, int purok, int calam1_hwmny, int calam2_hwmny, int calam3_hwmny,
+			int calam4_hwmny, int calam5_hwmny, int calam6_hwmny, int calam7_hwmny, int calam8_hwmny,
+			int calam9_hwmny) {
 		super();
 		this.id = id;
 		this.mun = mun;
@@ -158,16 +158,15 @@ public class Entity {
 
 	@Override
 	public String toString() {
-		return "Entity [id=" + id + ", mun=" + mun + ", zone=" + zone
-				+ ", brgy=" + brgy + ", purok=" + purok + ", calam1_hwmny="
-				+ calam1_hwmny + ", calam2_hwmny=" + calam2_hwmny
-				+ ", calam3_hwmny=" + calam3_hwmny + ", calam4_hwmny="
-				+ calam4_hwmny + ", calam5_hwmny=" + calam5_hwmny
-				+ ", calam6_hwmny=" + calam6_hwmny + ", calam7_hwmny="
-				+ calam7_hwmny + ", calam8_hwmny=" + calam8_hwmny
-				+ ", calam9_hwmny=" + calam9_hwmny + "]";
+		return "Entity [id=" + id + ", mun=" + mun + ", zone=" + zone + ", brgy=" + brgy + ", purok=" + purok
+				+ ", calam1_hwmny=" + calam1_hwmny + ", calam2_hwmny=" + calam2_hwmny + ", calam3_hwmny=" + calam3_hwmny
+				+ ", calam4_hwmny=" + calam4_hwmny + ", calam5_hwmny=" + calam5_hwmny + ", calam6_hwmny=" + calam6_hwmny
+				+ ", calam7_hwmny=" + calam7_hwmny + ", calam8_hwmny=" + calam8_hwmny + ", calam9_hwmny=" + calam9_hwmny
+				+ "]";
 	}
+
 	public Object[] toArray() {
-		return new Object[]{id, mun, zone, brgy, purok, calam1_hwmny, calam2_hwmny,calam3_hwmny,calam4_hwmny,calam5_hwmny,calam6_hwmny,calam7_hwmny,calam8_hwmny,calam9_hwmny};
+		return new Object[] { id, mun, zone, brgy, purok, calam1_hwmny, calam2_hwmny, calam3_hwmny, calam4_hwmny,
+				calam5_hwmny, calam6_hwmny, calam7_hwmny, calam8_hwmny, calam9_hwmny };
 	}
 }

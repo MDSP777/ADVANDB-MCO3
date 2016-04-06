@@ -8,6 +8,8 @@ import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import model.Entity;
+
 public class ResultPanel extends JPanel{
 	
 	private JTable result;
@@ -32,12 +34,7 @@ public class ResultPanel extends JPanel{
 	}
 	
 	public Object[] getHeaders() {
-		Object[] headers = new Object[resultSet[0].length];
-		
-		for (int j = 0; j < resultSet[0].length; j++)
-			headers[j] = resultSet[0][j];
-		
-		return headers;
+		return Entity.HEADERS;
 	}
 	
 	public Object[][] getRows() {
