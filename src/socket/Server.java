@@ -376,7 +376,7 @@ public class Server {
 							// code for writing
 							} else if(split[1].startsWith("UPDATE")) {
 								if(cIp != null){
-									if("Palawan".equals(split[3])){
+									if("Marinduque".equals(split[3])){
 										System.out.println("Local write (Marinduque)");
 										// send update request to central 
 										System.out.println("Sending request to central...");

@@ -55,12 +55,9 @@ public class WritePanel extends JPanel{
 		
 		panelCalamity.add(panelFrequency);
 		
-		JPanel panelCrash = new JPanel();
-		panelCrash.setLayout(new BoxLayout(panelCrash, BoxLayout.LINE_AXIS));
-		
 		this.add(panelHousehold);
 		this.add(panelCalamity);
-		this.add(panelCrash);
+		this.add(btnAdd);
 		
 		btnAdd.addActionListener(new ActionListener() {
 

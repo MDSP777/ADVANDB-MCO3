@@ -34,7 +34,7 @@ public class DBManager {
 		this.url = "jdbc:mysql://127.0.0.1:3306/"; //jdbc.mysql://127.0.0.1:3306/
 		this.dbName = dbName; //db_hpq
 		this.username = "root"; //root
-		this.password = "IforgoT197!!";
+		this.password = "root";
 	}
 
 	public Connection getConnection() {
