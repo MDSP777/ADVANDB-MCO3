@@ -68,9 +68,10 @@ public class ReadTransaction extends Transaction{
 	}
 
 	public String toString() {
-		return "Read: Group By: " + drillDownRollUp + 
-				", Reasons for Low Harvest = " + sliceAndDiceFish +
-				", Reasons for Low Fish = " + sliceAndDiceHarvest +
-				", Reasons for Few Animals = " + sliceAndDiceAnimal;
+		return "Read from " + database + " : " +
+				((!drillDownRollUp.isEmpty()) ? "Group By: " + drillDownRollUp : "")+ 
+				((!sliceAndDiceFish.isEmpty()) ? ((!drillDownRollUp.isEmpty()) ? ", Reasons for Low Fish = " + sliceAndDiceFish : " Reasons for Low Fish = " + sliceAndDiceFish) : "") +
+				((!sliceAndDiceHarvest.isEmpty()) ? ((!sliceAndDiceFish.isEmpty() || !drillDownRollUp.isEmpty()) ? ", Reasons for Low Harvest = " + sliceAndDiceHarvest : " Reasons for Low Harvest = " + sliceAndDiceHarvest) : "")+
+				((!sliceAndDiceAnimal.isEmpty()) ? ((!sliceAndDiceHarvest.isEmpty() || !sliceAndDiceFish.isEmpty() || !drillDownRollUp.isEmpty()) ? ", Reasons for Few Animals = " + sliceAndDiceAnimal : " Reasons for Few Animals = " + sliceAndDiceAnimal) : "");
 	}
 }

@@ -15,6 +15,7 @@ import socket.Client;
 
 import model.Entity;
 import model.QueryGenerator;
+import model.ReadTransaction;
 import model.Transaction;
 
 public class TransactionsPanel extends JPanel{
@@ -41,9 +42,10 @@ public class TransactionsPanel extends JPanel{
 					client.case1(transactionsList);
 					System.out.println("Finished executing SQL statements");
 					ArrayList<String> readTransactions = new ArrayList<String>();
-					for(String t : transactionsList) {
-						if(t.contains("SELECT")) {
-							readTransactions.add(t);
+					for(int i = 0; i < transactionsList.size(); i++) {
+						Transaction t = transactions.get(i);
+						if(t instanceof ReadTransaction) {
+							readTransactions.add(t.toString()+"@"+transactionsList.get(i).split("@")[3]);
 						}
 					}
 					mainFrame.updateTransactionList(readTransactions);
@@ -88,6 +90,9 @@ public class TransactionsPanel extends JPanel{
 	public Object[][] getById(String id) {
 		ArrayList<Entity> entities = client.getById(id);
 		// TODO handle if entities is null (unable to read from other branches)
+		if (entities == null) {
+			return null;
+		}
 		Object data[][] = new Object[entities.size()][Entity.COLUMN_COUNT];
 		for(int i = 0; i < entities.size(); i++) {
 			data[i] = entities.get(i).toArray();
