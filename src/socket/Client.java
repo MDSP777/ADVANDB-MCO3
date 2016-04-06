@@ -113,7 +113,7 @@ public class Client {
 				} else if(split[1].startsWith("UPDATE")) {
 					Connection connection = new DBManager(dbName).getConnection();
 					Statement statement = null;
-					int[] results;
+					int[] results = null;
 					try {
 						statement = connection.createStatement();
 						statement.addBatch("Start transaction;");
@@ -127,18 +127,35 @@ public class Client {
 					// TODO check if results[1] affected any rows
 					// if 0, meaning palawan is attempting to write to marinduque / vice versa
 					// else palawan -> palawan / marinduque -> marinduque
-					Socket sk = new Socket(serverIp, sharedPortNo);
-					DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
-					dos.writeUTF(cur);
-					dos.close();
-					sk.close();
-					
-					putIntoMap(split[2], connection);
+					if(results[1]>=1){
+						Socket sk = new Socket(serverIp, sharedPortNo);
+						DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+						dos.writeUTF(cur+"@"+clientName);
+						dos.close();
+						sk.close();
+						
+						putIntoMap(split[2], connection);
+					} else {
+						System.out.println("Global write. Sending to server...");
+						Socket sk = new Socket(serverIp, sharedPortNo);
+						DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+						dos.writeUTF(cur+"@"+theOther(clientName));
+						dos.close();
+						sk.close();
+					}
 				}
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 			addTransaction();
+		}
+
+		private String theOther(String client) {
+			switch(client){
+				case PALAWAN: return MARINDUQUE;
+				case MARINDUQUE: return PALAWAN;
+			}
+			return null;
 		}
 		
 	}
@@ -158,19 +175,19 @@ public class Client {
 		return null;
 	}
 	
-	boolean executeWrite(String query){
-		try {
-			Connection connection = new DBManager(dbName).getConnection();
-			PreparedStatement statement = null;
-			statement = connection.prepareStatement(query);
-			int res = statement.executeUpdate();
-			connection.close();
-			return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+//	boolean executeWrite(String query){
+//		try {
+//			Connection connection = new DBManager(dbName).getConnection();
+//			PreparedStatement statement = null;
+//			statement = connection.prepareStatement(query);
+//			int res = statement.executeUpdate();
+//			connection.close();
+//			return true;
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return false;
+//	}
 	
 	class IncomingThread implements Runnable{
 
@@ -220,7 +237,18 @@ public class Client {
 								oos.close();
 								data.close();
 		                    } else { 
-		                    	boolean success = executeWrite(split[1]);
+		                    	boolean success = true;
+		                    	Connection connection = new DBManager(dbName).getConnection();
+		    					Statement statement = connection.createStatement();
+		    					int[] results = null;
+		    					try {
+		    						statement.addBatch("Start transaction;");
+		    						statement.addBatch(split[1]);
+		    						results = statement.executeBatch();
+		    					} catch (SQLException e) {
+		    						e.printStackTrace();
+		    						success = false;
+		    					}
 		                    	if(success){
 		                    		Socket sk = new Socket(serverIp, portNo);
 		                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
@@ -234,6 +262,23 @@ public class Client {
 		                    		dos.close();
 		                    		sk.close();
 		                    	}
+		                    	
+		                    	if("dontauto".equals(split[4])){
+		                    		Socket skt = ss.accept();
+		                    		DataInputStream dis = new DataInputStream(skt.getInputStream());
+		                    		String result = dis.readUTF();
+		                    		dis.close();
+		                    		skt.close();
+		                    		
+		                    		if("Commit".equals(result)){
+			                    		statement.execute("commit;");
+		                    		} else {
+		                    			statement.execute("rollback;");
+		                    		}
+		                    	} else {
+		                    		statement.execute("commit;");
+		                    	}
+		                    	connection.close();
 		                    }
 	                    }
 					} catch(Exception e){

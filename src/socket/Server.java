@@ -183,30 +183,103 @@ public class Server {
 							// code for writing
 							} else if(split[1].startsWith("UPDATE")) {
 								// TODO we might still want to handle Palawan writing to Marinduque
-								if(cIp != null){ 
-									// send update request to central 
-									System.out.println("Sending request to central...");
-									Socket data = new Socket(cIp, 6969);
-									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-									dos.writeUTF(message);
-									dos.close();
-									data.close();
-									
-									// receive confirmation from central
-									System.out.println("Waiting for confirmation from central...");
-									data = ssCentral.accept();
-									DataInputStream din = new DataInputStream(data.getInputStream());
-									String ok = din.readUTF();
-									din.close();
-									data.close();
-									
-									// send ok to palawan
-									System.out.println("Received confirmation: "+ok);
-									data = new Socket(pIp, 6969);
-									dos = new DataOutputStream(data.getOutputStream());
-									dos.writeUTF(ok+"@"+split[2]);
-									dos.close();
-									data.close();
+								if(cIp != null){
+									if("Palawan".equals(split[3])){
+										System.out.println("Local write (Palawan)");
+										// send update request to central 
+										System.out.println("Sending request to central...");
+										Socket data = new Socket(cIp, 6969);
+										DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+										dos.writeUTF(message+"@auto");
+										dos.close();
+										data.close();
+										
+										// receive confirmation from central
+										System.out.println("Waiting for confirmation from central...");
+										data = ssCentral.accept();
+										DataInputStream din = new DataInputStream(data.getInputStream());
+										String ok = din.readUTF();
+										din.close();
+										data.close();
+										
+										// send ok to palawan
+										System.out.println("Received confirmation: "+ok);
+										data = new Socket(pIp, 6969);
+										dos = new DataOutputStream(data.getOutputStream());
+										dos.writeUTF(ok+"@"+split[2]);
+										dos.close();
+										data.close();
+									} else {
+										System.out.println("Global write (Palawan)");
+										if(cIp!=null && mIp!=null){
+											String centralOk = "";
+											String marinOk = "";
+											
+											try{
+												// send update request to central 
+												System.out.println("Sending request to central...");
+												Socket data = new Socket(cIp, 6969);
+												DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+												dos.writeUTF(message+"@dontauto");
+												dos.close();
+												data.close();
+												
+												// receive confirmation from central
+												System.out.println("Waiting for confirmation from central...");
+												data = ssCentral.accept();
+												DataInputStream din = new DataInputStream(data.getInputStream());
+												centralOk = din.readUTF();
+												din.close();
+												data.close();
+											} catch(Exception e){
+												System.out.println("Failed to write to Central");
+												centralOk = "fail";
+											}
+											
+											if(!"fail".equals(centralOk)){
+												try{
+												// send update request to marinduque 
+												System.out.println("Sending request to marinduque...");
+												Socket data = new Socket(mIp, 6969);
+												DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+												dos.writeUTF(message+"@dontauto");
+												dos.close();
+												data.close();
+												
+												// receive confirmation from central
+												System.out.println("Waiting for confirmation from central...");
+												data = ssCentral.accept();
+												DataInputStream din = new DataInputStream(data.getInputStream());
+												marinOk = din.readUTF();
+												din.close();
+												data.close();
+												} catch(Exception e){
+													System.out.println("Failed to write to Marinduque");
+													marinOk = "fail";
+												}
+											}
+											String commitOrNot = "Rollback";
+											if("OK".equals(centralOk) && "OK".equals(marinOk)){
+												commitOrNot = "Commit";
+											}
+											// tell central to commit
+											System.out.println("Sending commit command to central...");
+											Socket data = new Socket(cIp, 6969);
+											DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+											dos.writeUTF(commitOrNot);
+											dos.close();
+											data.close();
+											
+											// tell marinduque to commit
+											System.out.println("Sending commit command to marinduque...");
+											data = new Socket(mIp, 6969);
+											dos = new DataOutputStream(data.getOutputStream());
+											dos.writeUTF(commitOrNot);
+											dos.close();
+											data.close();
+										}
+										
+									}
 								} else { // central is dead
 									Socket data = new Socket(pIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
