@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -34,26 +35,29 @@ public class PalawanClient extends Client {
 	private int sharedPortNo = 6968;
 	private int portNo = 6969;
 	private volatile HashMap<String, ArrayList<Entity>> rsMap = new HashMap<>();
+	private volatile HashMap<String, Connection> connectionsMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
+	private volatile int nRunningTransactions;
 	
 	public PalawanClient(String serverIp) throws IOException{
 		ss = new ServerSocket(6969);
 		this.serverIp = serverIp;
 		
 		// send connection to Server
-		new Thread(new IncomingThread()).start();
-		Socket initSocket = new Socket(serverIp, sharedPortNo);
-		DataOutputStream dout = new DataOutputStream(initSocket.getOutputStream());
-		dout.writeUTF(clientName);
-		initSocket.close();
+//		new Thread(new IncomingThread()).start();
+//		Socket initSocket = new Socket(serverIp, sharedPortNo);
+//		DataOutputStream dout = new DataOutputStream(initSocket.getOutputStream());
+//		dout.writeUTF(clientName);
+//		initSocket.close();
 		
 	}
 	
 	public void case1(ArrayList<String> transactions) throws Exception {
 		for(String cur: transactions){
-			System.out.println(cur);
+			System.out.println("Running: "+cur);
 			new Thread(new TransactionThread(cur)).start();
 		}
+		while(nRunningTransactions<transactions.size());
 	}
 	
 	class TransactionThread implements Runnable {
@@ -86,7 +90,16 @@ public class PalawanClient extends Client {
 						s.close();
 					}
 				} else if(split[1].startsWith("UPDATE")) {
-					executeWrite(split[1]);
+					Connection connection = new DBManager(dbName).getConnection();
+					Statement statement = null;
+					try {
+						statement = connection.createStatement();
+						statement.addBatch("Start transaction;");
+						statement.addBatch(split[1]);
+						statement.executeBatch();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 					System.out.println("Finished Writing!");
 					
 					Socket sk = new Socket(serverIp, sharedPortNo);
@@ -94,10 +107,13 @@ public class PalawanClient extends Client {
 					dos.writeUTF(cur);
 					dos.close();
 					sk.close();
+					
+					putIntoMap(split[2], connection);
 				}
 			} catch (Exception e){
 				e.printStackTrace();
 			}
+			addTransaction();
 		}
 		
 	}
@@ -109,8 +125,8 @@ public class PalawanClient extends Client {
 		try {
 			statement = connection.prepareStatement(query);
 			resultSet = statement.executeQuery();
-//			connection.close();
 			return resultSet;
+//			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -118,11 +134,9 @@ public class PalawanClient extends Client {
 	}
 	
 	boolean executeWrite(String query){
-		
-		// TODO add shiz for start and end of transaction
-		Connection connection = new DBManager(dbName).getConnection();
-		PreparedStatement statement = null;
 		try {
+			Connection connection = new DBManager(dbName).getConnection();
+			PreparedStatement statement = null;
 			statement = connection.prepareStatement(query);
 			int res = statement.executeUpdate();
 			connection.close();
@@ -159,6 +173,16 @@ public class PalawanClient extends Client {
 								e1.printStackTrace();
 							}
 							System.out.println("Unlocked Result Set");
+	                    } else if (split[0].startsWith("OK")){
+	                    	Connection c = connectionsMap.get(split[1]);
+	                    	c.createStatement().execute("commit;");
+	                    	c.close();
+	                    	connectionsMap.remove(split[1]);
+	                    } else if (split[0].startsWith("GG")){
+	                    	Connection c = connectionsMap.get(split[1]);
+	                    	c.createStatement().execute("rollback;");
+	                    	c.close();
+	                    	connectionsMap.remove(split[1]);
 	                    } else {
 		                    if(split[1].startsWith("SELECT")){
 		                    	ResultSet rs = executeRead(split[1]);
@@ -226,6 +250,14 @@ public class PalawanClient extends Client {
 		rsMap.put(id, e);
 	}
 	
+	public synchronized void putIntoMap(String id, Connection c){
+		connectionsMap.put(id, c);
+	}
+	
+	public synchronized void addTransaction(){
+		nRunningTransactions++;
+	}
+	
 	public ArrayList<Entity> getById(String id){
 		return rsMap.get(id);
 	}
@@ -233,7 +265,7 @@ public class PalawanClient extends Client {
 	public void sendCrashMessage() throws UnknownHostException, IOException {
 		Socket sk = new Socket(serverIp, portNo);
 		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
-		dos.writeUTF(clientName + "has died.");
+		dos.writeUTF(clientName + " has died.");
 		dos.close();
 		sk.close();
 	}

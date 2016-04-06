@@ -33,21 +33,21 @@ public class QueryGenerator {
 		
 		String harvest = "AND (";
 		for(String h : transaction.getSliceAndDiceHarvest().toString().split(",")) {
-			harvest += "OR H.u_low_harv = " + h.split(" ")[0].trim();
+			harvest += " OR H.u_low_harv = " + h.split(" ")[0].trim();
 		}
 		harvest = harvest.replaceFirst("OR", "").trim();
 		harvest += ") ";
 		
 		String fish = "AND (";
 		for(String f : transaction.getSliceAndDiceFish().toString().split(",")) {
-			fish += "OR H.u_low_fish = " + f.split(" ")[0].trim();
+			fish += " OR H.u_low_fish = " + f.split(" ")[0].trim();
 		}
 		fish = fish.replaceFirst("OR", "").trim();
 		fish += ") ";
 		
 		String animal = "AND (";
 		for(String a : transaction.getSliceAndDiceAnimal().toString().split(",")) {
-			animal += "OR H.u_low_lve = " + a.split(" ")[0].trim();
+			animal += " OR H.u_low_lve = " + a.split(" ")[0].trim();
 		}
 		animal = animal.replaceFirst("OR", "").trim();
 		animal += ") ";

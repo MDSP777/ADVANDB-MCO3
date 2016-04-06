@@ -73,7 +73,6 @@ public class Server {
 		System.out.println("All connected!");
 	}
 
-	@SuppressWarnings("unused")
 	public void serve() throws ClassNotFoundException {
 		Socket curr;
 		while(true) {
@@ -133,6 +132,7 @@ public class Server {
 									data.close();
 									
 									// wait for the data
+									// TODO what if Marinduque dies here? Need code to send unable to read message
 									System.out.println("Waiting for data...");
 									data = ssMarinduque.accept();
 									ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
@@ -144,7 +144,7 @@ public class Server {
 									System.out.println("Got data! Sending back to requester...");
 									data = new Socket(pIp, 6969);
 									dos = new DataOutputStream(data.getOutputStream());
-									dos.writeUTF("Sending data");
+									dos.writeUTF("Sending data@"+split[3]);
 									dos.close();
 									data.close();
 									data = new Socket(pIp, 6969);
@@ -155,13 +155,12 @@ public class Server {
 								} else { // both are dead
 									Socket data = new Socket(mIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-									dos.writeUTF("Unable to read");
+									dos.writeUTF("Unable to read@"+split[3]);
 									dos.close();
 									data.close();
 								}
 							// code for writing
 							} else if(split[1].startsWith("UPDATE")) {
-								// not sure about any of this shiz below
 								switch(split[0]){
 									case "Palawan":
 										if(cIp != null){ 
@@ -174,6 +173,7 @@ public class Server {
 											data.close();
 											
 											// receive confirmation from central
+											
 											System.out.println("Waiting for confirmation from central...");
 											data = ssCentral.accept();
 											DataInputStream din = new DataInputStream(data.getInputStream());
@@ -183,15 +183,23 @@ public class Server {
 											
 											// send ok to palawan
 											System.out.println("Received confirmation: "+ok);
+											data = new Socket(pIp, 6969);
+											dos = new DataOutputStream(data.getOutputStream());
+											dos.writeUTF(ok+"@"+split[2]);
+											dos.close();
+											data.close();
 										} else { // central is dead
 											Socket data = new Socket(pIp, 6969);
 											DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF("Central has died");
+											dos.writeUTF("GG@"+split[2]);
 											dos.close();
 											data.close();
 										}
 										break;
 									case "Marinduque":
+										
+										break;
+									case "Central":
 										
 										break;
 								}

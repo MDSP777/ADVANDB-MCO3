@@ -12,6 +12,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import socket.Client;
+import socket.PalawanClient;
+import model.Entity;
 import model.QueryGenerator;
 import model.Transaction;
 
@@ -20,7 +22,7 @@ public class TransactionsPanel extends JPanel{
 	private ArrayList<Transaction> transactions;
 	private JTextArea taTransactions;
 	private JButton btnExecute;
-	private Client client;
+	private PalawanClient client;
 	private ArrayList<String> transactionsList;
 	private int id = 0;
 	
@@ -61,10 +63,10 @@ public class TransactionsPanel extends JPanel{
 		transactions.add(transaction);
 		taTransactions.append(transaction.toString()+"\n");
 		transactionsList.add(QueryGenerator.generate(transaction)+"@"+id);
-		System.out.println(QueryGenerator.generate(transaction)+"@"+id);
+		System.out.println("Generated: "+QueryGenerator.generate(transaction)+"@"+id);
 	}
 	
-	public void setClient(Client c){
+	public void setClient(PalawanClient c){
 		this.client = c;
 	}
 }
