@@ -47,6 +47,7 @@ public class Client {
 	
 	public Client(String serverIp, String branchName) throws IOException{
 		ss = new ServerSocket(6969);
+		ss.setSoTimeout(15000);
 		this.serverIp = serverIp;
 		clientName = branchName;
 		
@@ -222,6 +223,7 @@ public class Client {
 	                    System.out.println("Received "+msgin);
 	                    String[] split = msgin.split("@");
 	                    if("CentralWrite".equals(split[0])){
+	                    	System.out.println("Writing to Central");
 	                    	Connection connection;
 	    					if(password == null) {
 	    						connection = new DBManager(dbName).getConnection();
@@ -345,7 +347,7 @@ public class Client {
 		    						e.printStackTrace();
 		    						success = false;
 		    					}
-		    					if(!"Central".equals(split[0])){
+		    					if("Central".equals(split[0])){
 		    						if(success){
 		    							System.out.println("Transaction success!");
 			                    		Socket sk = new Socket(serverIp, portNo);

@@ -617,7 +617,7 @@ public class Server {
 								if("OK".equals(res)){
 									s = new Socket(pIp, 6969);
 									dout = new DataOutputStream(s.getOutputStream());
-									dout.writeUTF("Commit;");
+									dout.writeUTF("Commit");
 									dout.close();
 									s.close();
 								}
@@ -642,7 +642,7 @@ public class Server {
 								if("OK".equals(res)){
 									s = new Socket(mIp, 6969);
 									dout = new DataOutputStream(s.getOutputStream());
-									dout.writeUTF("Commit;");
+									dout.writeUTF("Commit");
 									dout.close();
 									s.close();
 								}
