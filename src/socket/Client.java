@@ -270,8 +270,13 @@ public class Client {
 							}
 							System.out.println("Unlocked Result Set");
 	                    	
-	                    	ResultSet rs = executeRead(split[2]);
-							
+							ResultSet rs = null;
+							System.out.println(split[2]);
+	                    	if(split[2].contains("db_hpq_"+Client.MARINDUQUE.toLowerCase())) {
+	                    		rs = executeRead(split[2].replaceAll("db_hpq_"+Client.MARINDUQUE.toLowerCase(), "db_hpq_"+theOther(Client.MARINDUQUE).toLowerCase()));
+	                    	} else if(split[2].contains("db_hpq_"+Client.PALAWAN.toLowerCase())) {
+	                    		rs = executeRead(split[2].replaceAll("db_hpq_"+Client.PALAWAN.toLowerCase(), "db_hpq_"+theOther(Client.PALAWAN).toLowerCase()));
+	                    	}
 							ArrayList<Entity> entities = new ArrayList<Entity>();
 							entities.addAll(rsMap.get(split[4]));
 							
@@ -408,6 +413,14 @@ public class Client {
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             } 
+		}
+		
+		private String theOther(String client) {
+			switch(client){
+				case PALAWAN: return MARINDUQUE;
+				case MARINDUQUE: return PALAWAN;
+			}
+			return null;
 		}
 	}
 	
