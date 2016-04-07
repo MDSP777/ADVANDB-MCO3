@@ -37,6 +37,7 @@ public class MainFrame extends JFrame{
 	private Client client;
 	
 	public MainFrame() throws IOException {
+		
 		JPanel serverPanel = new JPanel();
 		serverPanel.setLayout(new BoxLayout(serverPanel, BoxLayout.PAGE_AXIS));
 		JLabel lblAddress = new JLabel("IP Address: ");
@@ -57,6 +58,7 @@ public class MainFrame extends JFrame{
 			mainPanel.setLayout(null);
 			
 			transactionsPanel = new TransactionsPanel(this);
+			
 			
 			isolationLevelPanel = new IsolationLevelPanel();
 			isolationLevelPanel.setLocation(0, 0);
