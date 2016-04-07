@@ -1,5 +1,7 @@
 package model;
 
+import socket.Client;
+
 public class QueryGenerator {
 
 	public static String generate(Transaction transaction) {
@@ -29,7 +31,15 @@ public class QueryGenerator {
 				+ "H.calam8_hwmny, "
 				+ "H.calam9_hwmny "
 				+ "FROM db_hpq.hpq_hh H "
-				+ "WHERE id=id ";
+				+ "WHERE ";
+		
+		if(Client.PALAWAN.equals(transaction.getDatabase())) {
+			query += "province=1 ";
+		} else if(Client.MARINDUQUE.equals(transaction.getDatabase())) {
+			query += "province=2 ";
+		} else if(Client.CENTRAL.equals(transaction.getDatabase())){
+			query += "(province=1 OR province = 2) ";
+		}
 		
 		String harvest = "AND (";
 		for(String h : transaction.getSliceAndDiceHarvest().toString().split(",")) {
