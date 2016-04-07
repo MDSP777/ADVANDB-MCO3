@@ -47,7 +47,7 @@ public class Server {
 		int n = 0;
 		Socket curr;
 		System.out.println("Starting...");
-		while(n<3){
+		while(n<2){
 			curr = ssShared.accept();
 			String ip = curr.getInetAddress().getHostAddress();
 			DataInputStream dis = new DataInputStream(curr.getInputStream());
@@ -143,6 +143,7 @@ public class Server {
 									// send a request for data to marinduque
 									Socket data = new Socket(mIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									message = message.replaceAll("db_hpq_"+Client.CENTRAL.toLowerCase(), "db_hpq_"+Client.MARINDUQUE.toLowerCase());
 									dos.writeUTF(message);
 									dos.close();
 									data.close();
@@ -178,6 +179,7 @@ public class Server {
 										try{
 											System.out.println("Waiting for data...");
 											data = ssMarinduque.accept();
+											//System.out.println("Accepted the data!");
 											ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
 											CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
 											ois.close();
