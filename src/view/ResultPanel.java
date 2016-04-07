@@ -33,7 +33,7 @@ public class ResultPanel extends JPanel{
 			scrollPane.setSize(850, 520);
 			scrollPane.setLocation(10, 20);
 			this.add(scrollPane);
-			
+			System.out.println("Num of rows: " + resultSet.length);
 		} else {
 			this.removeAll();
 			JLabel lblResult = new JLabel("Unable to retrieve data.");
@@ -41,6 +41,7 @@ public class ResultPanel extends JPanel{
 			lblResult.setSize(300, 30);
 			this.add(lblResult);
 		}
+		
 		this.revalidate();
 		this.repaint();
 	}

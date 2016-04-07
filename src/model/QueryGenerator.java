@@ -34,11 +34,11 @@ public class QueryGenerator {
 				+ "WHERE ";
 		
 		if(Client.PALAWAN.equals(transaction.getDatabase())) {
-			query += "province=1 ";
+			query += "prov=1 ";
 		} else if(Client.MARINDUQUE.equals(transaction.getDatabase())) {
-			query += "province=2 ";
+			query += "prov=2 ";
 		} else if(Client.CENTRAL.equals(transaction.getDatabase())){
-			query += "(province=1 OR province = 2) ";
+			query += "(prov=1 OR prov=2) ";
 		}
 		
 		String harvest = "AND (";
