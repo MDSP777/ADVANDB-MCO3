@@ -154,6 +154,10 @@ public class MainFrame extends JFrame{
 	}
 	
 	public void updateTableById(String id) {
-		resultPanel.buildTableModel(transactionsPanel.getById(id));
+		if(id.startsWith("Read")) {
+			resultPanel.buildTableModel(transactionsPanel.getById(id.split("@")[1]));
+		} else if(id.startsWith("Write")) {
+			resultPanel.showWriteMessage(transactionsPanel.getWriteStatusById(id.split("@")[1]));
+		}
 	}
 }

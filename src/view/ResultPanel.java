@@ -56,6 +56,15 @@ public class ResultPanel extends JPanel{
 		this.repaint();
 	}
 	
+	public void showWriteMessage(String message) {
+		this.removeAll();
+		JLabel lblResult = new JLabel(message);
+		lblResult.setLocation(380, 250);
+		
+		lblResult.setSize(300, 30);
+		this.add(lblResult);
+	}
+	
 	public Object[] getHeaders() {
 		return Entity.HEADERS;
 	}

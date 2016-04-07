@@ -17,6 +17,7 @@ import model.Entity;
 import model.QueryGenerator;
 import model.ReadTransaction;
 import model.Transaction;
+import model.WriteTransaction;
 
 public class TransactionsPanel extends JPanel{
 
@@ -41,14 +42,16 @@ public class TransactionsPanel extends JPanel{
 				try {
 					client.case1(transactionsList);
 					System.out.println("Finished executing SQL statements");
-					ArrayList<String> readTransactions = new ArrayList<String>();
+					ArrayList<String> transactionss = new ArrayList<String>();
 					for(int i = 0; i < transactionsList.size(); i++) {
 						Transaction t = transactions.get(i);
 						if(t instanceof ReadTransaction) {
-							readTransactions.add(t.toString()+"@"+transactionsList.get(i).split("@")[3]);
+							transactionss.add(t.toString()+"@"+transactionsList.get(i).split("@")[3]);
+						} else if (t instanceof WriteTransaction) {
+							transactionss.add(t.toString()+"@"+transactionsList.get(i).split("@")[2]);
 						}
 					}
-					mainFrame.updateTransactionList(readTransactions);
+					mainFrame.updateTransactionList(transactionss);
 					transactions.removeAll(transactions);
 					transactionsList.removeAll(transactionsList);
 					taTransactions.setText("");
@@ -103,6 +106,10 @@ public class TransactionsPanel extends JPanel{
 			data[i] = entities.get(i).toArray();
 		}
 		return data;
+	}
+	
+	public String getWriteStatusById(String id) {
+		return client.getWriteStatusById(id);
 	}
 }
 

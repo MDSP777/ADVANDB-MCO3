@@ -41,13 +41,14 @@ public class Client {
 	private int portNo;
 	private volatile HashMap<String, ArrayList<Entity>> rsMap = new HashMap<>();
 	private volatile HashMap<String, Connection> connectionsMap = new HashMap<>();
+	private volatile HashMap<String, String> writeMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
 	private volatile int nRunningTransactions;
 	private String password;
 	
 	public Client(String serverIp, String branchName) throws IOException{
 		ss = new ServerSocket(6969);
-		ss.setSoTimeout(15000);
+		ss.setSoTimeout(1500000);
 		this.serverIp = serverIp;
 		clientName = branchName;
 		
@@ -301,22 +302,26 @@ public class Client {
 											rs.getInt(14));
 									entities.add(cur);
 								}
+								System.out.println("MAY RESULTSSSS");
 							} catch (SQLException e1) {
 								e1.printStackTrace();
 							}
 							
 							rsMap.put(split[4], entities);
-							
+							System.out.println(getById(split[4]).size());
+							System.out.println(getById(split[4]));
 	                    } else if (split[0].startsWith("OK")){
 	                    	Connection c = connectionsMap.get(split[1]);
 	                    	c.createStatement().execute("commit;");
 	                    	c.close();
 	                    	connectionsMap.remove(split[1]);
+	                    	writeMap.put(split[1], "Update successful!");
 	                    } else if (split[0].startsWith("GG")){
 	                    	Connection c = connectionsMap.get(split[1]);
 	                    	c.createStatement().execute("rollback;");
 	                    	c.close();
 	                    	connectionsMap.remove(split[1]);
+	                    	writeMap.put(split[1], "Update failed!");
 	                    } else {
 		                    if(split[1].startsWith("SELECT")){
 		                    	ResultSet rs = executeRead(split[1]);
@@ -466,6 +471,10 @@ public class Client {
 	
 	public ArrayList<Entity> getById(String id){
 		return rsMap.get(id);
+	}
+	
+	public String getWriteStatusById(String id) {
+		return writeMap.get(id);
 	}
 	
 	public void sendCrashMessage() throws UnknownHostException, IOException {
