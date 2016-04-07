@@ -228,6 +228,49 @@ public class Client {
 								e1.printStackTrace();
 							}
 							System.out.println("Unlocked Result Set");
+	                    } else if("Merge".equals(split[0])){
+	                    	System.out.println("Receiving data...");
+	                    	s = ss.accept();
+	                    	ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+							try {
+									rsw = (CachedRowSetImpl) ois.readObject();
+									ResultSet rs = rsw.getOriginal();
+									putIntoMap(split[4], rs);
+							} catch (ClassNotFoundException e1) {
+								e1.printStackTrace();
+							}
+							System.out.println("Unlocked Result Set");
+	                    	
+	                    	ResultSet rs = executeRead(split[2]);
+							
+							ArrayList<Entity> entities = new ArrayList<Entity>();
+							entities.addAll(rsMap.get(split[4]));
+							
+							try {
+								while(rs.next()){
+									Entity cur = new Entity(
+											rs.getInt(1),
+											rs.getInt(2),
+											rs.getInt(3),
+											rs.getInt(4),
+											rs.getInt(5),
+											rs.getInt(6),
+											rs.getInt(7),
+											rs.getInt(8),
+											rs.getInt(9),
+											rs.getInt(10),
+											rs.getInt(11),
+											rs.getInt(12),
+											rs.getInt(13),
+											rs.getInt(14));
+									entities.add(cur);
+								}
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+							
+							rsMap.put(split[4], entities);
+							
 	                    } else if (split[0].startsWith("OK")){
 	                    	Connection c = connectionsMap.get(split[1]);
 	                    	c.createStatement().execute("commit;");
