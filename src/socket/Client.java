@@ -213,36 +213,36 @@ public class Client {
 
 		@Override
 		public void run() {
-			 try {
-                while(true){
+			while (true) {
+				try {
 					Socket s = ss.accept();
 					DataInputStream din = new DataInputStream(s.getInputStream());
-					try{
-	                    String msgin = din.readUTF();
-	                    System.out.println("Received "+msgin);
-	                    String[] split = msgin.split("@");
-	                    if("CentralWrite".equals(split[0])){
-	                    	System.out.println("Writing to Central");
-	                    	Connection connection;
-	    					if(password == null) {
-	    						connection = new DBManager(dbName).getConnection();
-	    					} else {
-	    						connection = new DBManager(dbName, password).getConnection();
-	    					}
-	    					Statement stmt = connection.createStatement();
-	    					int res = stmt.executeUpdate(split[1]);
-	    					if(res>0){
-	    						Socket sk = new Socket(serverIp, portNo);
-	    						DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
-	    						dos.writeUTF("OK");
-	    						dos.close();
-	    						sk.close();
-	    					} else {
-	    						Socket sk = new Socket(serverIp, portNo);
-	    						DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
-	    						dos.writeUTF("GG");
-	    						dos.close();
-	    						sk.close();
+					try {
+						String msgin = din.readUTF();
+						System.out.println("Received " + msgin);
+						String[] split = msgin.split("@");
+						if ("CentralWrite".equals(split[0])) {
+							System.out.println("Writing to Central");
+							Connection connection;
+							if (password == null) {
+								connection = new DBManager(dbName).getConnection();
+							} else {
+								connection = new DBManager(dbName, password).getConnection();
+							}
+							Statement stmt = connection.createStatement();
+							int res = stmt.executeUpdate(split[1]);
+							if (res > 0) {
+								Socket sk = new Socket(serverIp, portNo);
+								DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+								dos.writeUTF("OK");
+								dos.close();
+								sk.close();
+							} else {
+								Socket sk = new Socket(serverIp, portNo);
+								DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+								dos.writeUTF("GG");
+								dos.close();
+								sk.close();
 	    					}
 	                    }else if(split[0].equals("Unable to read")){
 	                    	putNullResult(split[1]);
@@ -410,10 +410,9 @@ public class Client {
 						e.printStackTrace();
 					}
 					s.close();
+                	}catch(Exception e){
+                	}
                 } 
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            } 
 		}
 		
 		private String theOther(String client) {
