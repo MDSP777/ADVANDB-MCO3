@@ -336,75 +336,10 @@ public class Server {
 									dos.close();
 									data.close();
 									
-									if(Client.PALAWAN.equals(split[2])) {
-										// wait for the data
-										try{
-											System.out.println("Waiting for data from central...");
-											data = ssCentral.accept();
-											ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
-											CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
-											ois.close();
-											data.close();
-											
-											// send data back to Marinduque
-											System.out.println("Got data! Sending back to requester...");
-											data = new Socket(mIp, 6969);
-											dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF("Sending data@"+split[3]);
-											dos.close();
-											data.close();
-											data = new Socket(mIp, 6969);
-											ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
-											oos.writeObject(rsw);
-											oos.close();
-											data.close();
-											retrieveSuccess = true;
-										} catch (Exception e){
-											System.out.println("Timed out waiting for data from Palawan. Unable to read");
-										}
-									} else {
-										// wait for the data
-										// wait for the data
-										try{
-											System.out.println("Waiting for data...");
-											data = ssPalawan.accept();
-											//System.out.println("Accepted the data!");
-											ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
-											CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
-											ois.close();
-											data.close();
-											
-											// send data back to Palawan
-											System.out.println("Got data! Sending back to requester...");
-											data = new Socket(mIp, 6969);
-											dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF("Merge@"+message);
-											dos.close();
-											data.close();
-											data = new Socket(mIp, 6969);
-											ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
-											oos.writeObject(rsw);
-											oos.close();
-											data.close();
-											retrieveSuccess = true;
-										} catch(Exception e){
-											System.out.println("Unable to read");
-										}
-									}
-								}
-								if(!retrieveSuccess && pIp != null){ 
-									// send a request for data from Palawan
-									Socket data = new Socket(pIp, 6969);
-									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-									message = message.replaceAll("db_hpq_"+Client.CENTRAL.toLowerCase(), "db_hpq_"+Client.PALAWAN.toLowerCase());
-									dos.writeUTF(message);
-									dos.close();
-									data.close();
-									
 									// wait for the data
 									try{
-										System.out.println("Waiting for data...");
-										data = ssPalawan.accept();
+										System.out.println("Waiting for data from central...");
+										data = ssCentral.accept();
 										ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
 										CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
 										ois.close();
@@ -423,8 +358,72 @@ public class Server {
 										oos.close();
 										data.close();
 										retrieveSuccess = true;
-									} catch(Exception e){
-										System.out.println("Timed out waiting for data from Marinduque. Unable to read");
+									} catch (Exception e){
+										System.out.println("Timed out waiting for data from Palawan. Unable to read");
+									}
+								}
+								if(!retrieveSuccess && pIp != null){ 
+									// send a request for data from Palawan
+									Socket data = new Socket(pIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									message = message.replaceAll("db_hpq_"+Client.CENTRAL.toLowerCase(), "db_hpq_"+Client.PALAWAN.toLowerCase());
+									dos.writeUTF(message);
+									dos.close();
+									data.close();
+									
+									if(Client.PALAWAN.equals(split[2])) {
+										// wait for the data
+										try{
+											System.out.println("Waiting for data...");
+											data = ssPalawan.accept();
+											ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
+											CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
+											ois.close();
+											data.close();
+											
+											// send data back to Marinduque
+											System.out.println("Got data! Sending back to requester...");
+											data = new Socket(mIp, 6969);
+											dos = new DataOutputStream(data.getOutputStream());
+											dos.writeUTF("Sending data@"+split[3]);
+											dos.close();
+											data.close();
+											data = new Socket(mIp, 6969);
+											ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
+											oos.writeObject(rsw);
+											oos.close();
+											data.close();
+											retrieveSuccess = true;
+										} catch(Exception e){
+											System.out.println("Timed out waiting for data from Marinduque. Unable to read");
+										}
+									} else {
+										// wait for the data
+										try{
+											System.out.println("Waiting for data...");
+											data = ssPalawan.accept();
+											//System.out.println("Accepted the data!");
+											ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
+											CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
+											ois.close();
+											data.close();
+											
+											// send data back to Marinduque
+											System.out.println("Got data! Sending back to requester...");
+											data = new Socket(mIp, 6969);
+											dos = new DataOutputStream(data.getOutputStream());
+											dos.writeUTF("Merge@"+message);
+											dos.close();
+											data.close();
+											data = new Socket(mIp, 6969);
+											ObjectOutputStream oos = new ObjectOutputStream(data.getOutputStream());
+											oos.writeObject(rsw);
+											oos.close();
+											data.close();
+											retrieveSuccess = true;
+										} catch(Exception e){
+											System.out.println("Unable to read");
+										}
 									}
 								} 
 								if(!retrieveSuccess){ // both are dead
