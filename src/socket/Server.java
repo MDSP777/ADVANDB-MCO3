@@ -332,7 +332,6 @@ public class Server {
 									// send a request for data from Central
 									Socket data = new Socket(cIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
-									message = message.replaceAll("db_hpq_"+Client.CENTRAL.toLowerCase(), "db_hpq_"+Client.PALAWAN.toLowerCase());
 									dos.writeUTF(message);
 									dos.close();
 									data.close();
@@ -397,6 +396,7 @@ public class Server {
 									// send a request for data from Palawan
 									Socket data = new Socket(pIp, 6969);
 									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									message = message.replaceAll("db_hpq_"+Client.CENTRAL.toLowerCase(), "db_hpq_"+Client.PALAWAN.toLowerCase());
 									dos.writeUTF(message);
 									dos.close();
 									data.close();
