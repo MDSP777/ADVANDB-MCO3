@@ -365,19 +365,21 @@ public class Server {
 										}
 									} else {
 										// wait for the data
+										// wait for the data
 										try{
-											System.out.println("Waiting for data from central...");
-											data = ssCentral.accept();
+											System.out.println("Waiting for data...");
+											data = ssPalawan.accept();
+											//System.out.println("Accepted the data!");
 											ObjectInputStream ois = new ObjectInputStream(data.getInputStream());
 											CachedRowSetImpl rsw = (CachedRowSetImpl) ois.readObject();
 											ois.close();
 											data.close();
 											
-											// send data back to Marinduque
+											// send data back to Palawan
 											System.out.println("Got data! Sending back to requester...");
 											data = new Socket(mIp, 6969);
 											dos = new DataOutputStream(data.getOutputStream());
-											dos.writeUTF("Merge@"+split[3]);
+											dos.writeUTF("Merge@"+message);
 											dos.close();
 											data.close();
 											data = new Socket(mIp, 6969);
@@ -386,7 +388,7 @@ public class Server {
 											oos.close();
 											data.close();
 											retrieveSuccess = true;
-										} catch (Exception e){
+										} catch(Exception e){
 											System.out.println("Unable to read");
 										}
 									}
