@@ -103,7 +103,6 @@ public class Client {
 				String[] split = cur.split("@");
 				if(split.length>=2 && split[1].startsWith("SELECT")){
 					if(clientName.equals(split[2]) || "Central".equals(clientName)){
-						// TODO filter between Palawan and Marinduque for Central requests
 						ResultSet rs = executeRead(split[1]);
 						putIntoMap(split[3], rs);
 					} else {
