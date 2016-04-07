@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -26,18 +27,27 @@ public class ResultPanel extends JPanel{
 	
 	public void buildTableModel(Object[][] resultSet) {
 		if (resultSet != null) {
+			
 			this.resultSet = resultSet;
 			result = new JTable(new DefaultTableModel(getRows(), getHeaders()));
 			this.removeAll();
 			JScrollPane scrollPane = new JScrollPane(result);
-			scrollPane.setSize(850, 520);
+			
+			scrollPane.setSize(850, 500);
 			scrollPane.setLocation(10, 20);
+			
+			JLabel lblRows = new JLabel("Number of rows: " + resultSet.length);
+			lblRows.setSize(850, 20);
+			lblRows.setLocation(10, 520);
+			
 			this.add(scrollPane);
+			this.add(lblRows);
 			System.out.println("Num of rows: " + resultSet.length);
 		} else {
 			this.removeAll();
 			JLabel lblResult = new JLabel("Unable to retrieve data.");
 			lblResult.setLocation(380, 250);
+			
 			lblResult.setSize(300, 30);
 			this.add(lblResult);
 		}
@@ -55,6 +65,7 @@ public class ResultPanel extends JPanel{
 		
 		for (int i = 0; i < resultSet.length; i++) {
 			for (int j = 0; j < resultSet[i].length; j++){
+				
 				data[i][j] = resultSet[i][j];
 			}
 		}
