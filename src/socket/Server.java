@@ -493,16 +493,98 @@ public class Server {
 							
 							// attempt to update Palawan
 							try {
+								// send update request to palawan
+								System.out.println("Sending request to Palawan...");
+								Socket data = new Socket(pIp, 6969);
+								DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+								dos.writeUTF(message+"@dontauto");
+								dos.close();
+								data.close();
 								
+								// get rowcount from Palawan
+								System.out.println("Waiting for rowcount from Palawan...");
+								data = ssPalawan.accept();
+								DataInputStream din = new DataInputStream(data.getInputStream());
+								nRowsP = Integer.parseInt(din.readUTF());
+								din.close();
+								data.close();
 							} catch(Exception e){
-								
+								System.out.println("Palawan timed out.");
 							}
 							
-							// attempt to update Marinduque
-							try {
+							if(nRowsP==0){
+								// attempt to update Marinduque
+								try {
+									// send update request to Marinduque
+									System.out.println("Sending request to Marinduque...");
+									Socket data = new Socket(mIp, 6969);
+									DataOutputStream dos = new DataOutputStream(data.getOutputStream());
+									dos.writeUTF(message+"@dontauto");
+									dos.close();
+									data.close();
+									
+									// get rowcount from Marinduque
+									System.out.println("Waiting for rowcount from Marinduque...");
+									data = ssMarinduque.accept();
+									DataInputStream din = new DataInputStream(data.getInputStream());
+									nRowsM = Integer.parseInt(din.readUTF());
+									din.close();
+									data.close();
+								} catch(Exception e){
+									System.out.println("Marinduque timed out.");
+								}
+							}
+							
+							if(nRowsP!=0){
+								// tell central to write
+								System.out.println("Writing to central...");
+								String m = "CentralWrite@"+split[1]+"@"+split[2];
+								Socket s = new Socket(cIp, 6969);
+								DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+								dout.writeUTF(m);
+								dout.close();
+								s.close();
 								
-							} catch(Exception e){
+								// wait for response
+								s = ssCentral.accept();
+								dis = new DataInputStream(s.getInputStream());
+								String res = dis.readUTF();
+								dis.close();
+								s.close();
 								
+								// send response back to Palawan
+								if("OK".equals(res)){
+									s = new Socket(pIp, 6969);
+									dout = new DataOutputStream(s.getOutputStream());
+									dout.writeUTF("Commit;");
+									dout.close();
+									s.close();
+								}
+							} else if(nRowsM!=0){
+								// tell central to write
+								System.out.println("Writing to central...");
+								String m = "CentralWrite@"+split[1]+"@"+split[2];
+								Socket s = new Socket(cIp, 6969);
+								DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+								dout.writeUTF(m);
+								dout.close();
+								s.close();
+								
+								// wait for response
+								s = ssCentral.accept();
+								dis = new DataInputStream(s.getInputStream());
+								String res = dis.readUTF();
+								dis.close();
+								s.close();
+								
+								// send response back to Marinduque
+								if("OK".equals(res)){
+									s = new Socket(mIp, 6969);
+									dout = new DataOutputStream(s.getOutputStream());
+									dout.writeUTF("Commit;");
+									dout.close();
+									s.close();
+								}
 							}
 							break;
 					}

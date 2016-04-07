@@ -116,7 +116,7 @@ public class Client {
 						System.out.println("Received data!");
 						s.close();
 					}
-				} else if(split[1].startsWith("UPDATE")) {
+				} else if(!"Central".equals(split[0]) && split[1].startsWith("UPDATE")) {
 					Connection connection;
 					if(password == null) {
 						connection = new DBManager(dbName).getConnection();
@@ -151,6 +151,13 @@ public class Client {
 						dos.close();
 						sk.close();
 					}
+				} else {
+					System.out.println("Central update");
+					Socket sk = new Socket(serverIp, sharedPortNo);
+					DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+					dos.writeUTF(cur+"@Central");
+					dos.close();
+					sk.close();
 				}
 			} catch (Exception e){
 				e.printStackTrace();
@@ -214,7 +221,29 @@ public class Client {
 	                    String msgin = din.readUTF();
 	                    System.out.println("Received "+msgin);
 	                    String[] split = msgin.split("@");
-	                    if(split[0].equals("Unable to read")){
+	                    if("CentralWrite".equals(split[0])){
+	                    	Connection connection;
+	    					if(password == null) {
+	    						connection = new DBManager(dbName).getConnection();
+	    					} else {
+	    						connection = new DBManager(dbName, password).getConnection();
+	    					}
+	    					Statement stmt = connection.createStatement();
+	    					int res = stmt.executeUpdate(split[1]);
+	    					if(res>0){
+	    						Socket sk = new Socket(serverIp, portNo);
+	    						DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+	    						dos.writeUTF("OK");
+	    						dos.close();
+	    						sk.close();
+	    					} else {
+	    						Socket sk = new Socket(serverIp, portNo);
+	    						DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+	    						dos.writeUTF("GG");
+	    						dos.close();
+	    						sk.close();
+	    					}
+	                    }else if(split[0].equals("Unable to read")){
 	                    	putNullResult(split[1]);
 	                    } else if(split[0].startsWith("Sending data")){
 	                    	System.out.println("Receiving data...");
@@ -273,9 +302,12 @@ public class Client {
 		    							System.out.println("Transaction success!");
 			                    		Socket sk = new Socket(serverIp, portNo);
 			                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
-			                    		dos.writeUTF(split[1]+"");
+			                    		dos.writeUTF(results[1]+"");
 			                    		dos.close();
 			                    		sk.close();
+			                    		if(results[1]==0){
+			                    			split[4] = "auto";
+			                    		}
 		    						} else {
 		    							System.out.println("Transaction fail!");
 			                    		Socket sk = new Socket(serverIp, portNo);
