@@ -488,7 +488,22 @@ public class Server {
 							}
 							break;
 						case "Central":
+							int nRowsP = 0;
+							int nRowsM = 0;
 							
+							// attempt to update Palawan
+							try {
+								
+							} catch(Exception e){
+								
+							}
+							
+							// attempt to update Marinduque
+							try {
+								
+							} catch(Exception e){
+								
+							}
 							break;
 					}
 				}

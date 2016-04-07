@@ -102,6 +102,7 @@ public class Client {
 				String[] split = cur.split("@");
 				if(split.length>=2 && split[1].startsWith("SELECT")){
 					if(clientName.equals(split[2]) || "Central".equals(clientName)){
+						// TODO filter between Palawan and Marinduque for Central requests
 						ResultSet rs = executeRead(split[1]);
 						putIntoMap(split[3], rs);
 					} else {
@@ -134,9 +135,6 @@ public class Client {
 					}
 					System.out.println("Finished Writing!");
 					
-					// TODO check if results[1] affected any rows
-					// if 0, meaning palawan is attempting to write to marinduque / vice versa
-					// else palawan -> palawan / marinduque -> marinduque
 					if(results[1]>=1){
 						Socket sk = new Socket(serverIp, sharedPortNo);
 						DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
@@ -270,21 +268,40 @@ public class Client {
 		    						e.printStackTrace();
 		    						success = false;
 		    					}
-		                    	if(success){
-		                    		System.out.println("Transaction success!");
-		                    		Socket sk = new Socket(serverIp, portNo);
-		                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
-		                    		dos.writeUTF("OK");
-		                    		dos.close();
-		                    		sk.close();
-		                    	} else {
-		                    		System.out.println("Transaction fail!");
-		                    		Socket sk = new Socket(serverIp, portNo);
-		                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
-		                    		dos.writeUTF("GG");
-		                    		dos.close();
-		                    		sk.close();
-		                    	}
+		    					if(!"Central".equals(split[0])){
+		    						if(success){
+		    							System.out.println("Transaction success!");
+			                    		Socket sk = new Socket(serverIp, portNo);
+			                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+			                    		dos.writeUTF(split[1]+"");
+			                    		dos.close();
+			                    		sk.close();
+		    						} else {
+		    							System.out.println("Transaction fail!");
+			                    		Socket sk = new Socket(serverIp, portNo);
+			                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+			                    		dos.writeUTF("0");
+			                    		dos.close();
+			                    		sk.close();
+		    						}
+		    					}
+		    					else {
+			                    	if(success){
+			                    		System.out.println("Transaction success!");
+			                    		Socket sk = new Socket(serverIp, portNo);
+			                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+			                    		dos.writeUTF("OK");
+			                    		dos.close();
+			                    		sk.close();
+			                    	} else {
+			                    		System.out.println("Transaction fail!");
+			                    		Socket sk = new Socket(serverIp, portNo);
+			                    		DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+			                    		dos.writeUTF("GG");
+			                    		dos.close();
+			                    		sk.close();
+			                    	}
+		    					}
 		                    	
 		                    	if("dontauto".equals(split[4])){
 		                    		Socket skt = ss.accept();
