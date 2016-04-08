@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -19,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import socket.Client;
 
@@ -35,16 +38,26 @@ public class MainFrame extends JFrame{
 	private String IPAddress;
 	private String branchName;
 	private Client client;
+	private JPanel panelLoader;
 	
 	public MainFrame() throws IOException {
 		
+		try {
+		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
+		} catch (Exception e) {
+		    // If Nimbus is not available, you can set the GUI to another look and feel.
+		}
+		
 		JPanel serverPanel = new JPanel();
 		serverPanel.setLayout(new BoxLayout(serverPanel, BoxLayout.PAGE_AXIS));
-		JLabel lblAddress = new JLabel("IP Address: ");
 		JTextField tfAddress = new JTextField();
 		JComboBox cbDatabases = new JComboBox(new String[]{Client.PALAWAN, Client.MARINDUQUE, Client.CENTRAL});
 		
-		serverPanel.add(lblAddress);
 		serverPanel.add(tfAddress);
 		serverPanel.add(cbDatabases);
 		
@@ -58,7 +71,7 @@ public class MainFrame extends JFrame{
 			mainPanel.setLayout(null);
 			isolationLevelPanel = new IsolationLevelPanel();
 			isolationLevelPanel.setLocation(0, 0);
-			isolationLevelPanel.setSize(250, 50);
+			isolationLevelPanel.setSize(250, 70);
 			
 			writePanel = new WritePanel(transactionsPanel, branchName);
 			writePanel.setLocation(250, 0);
@@ -66,20 +79,27 @@ public class MainFrame extends JFrame{
 			client = new Client(this, IPAddress, branchName);
 			transactionListPanel = new TransactionListPanel(this);
 			transactionListPanel.setLocation(500, 0);
-			transactionListPanel.setSize(865, 50);
+			transactionListPanel.setSize(865, 70);
 			resultPanel = new ResultPanel();
-			resultPanel.setLocation(500, 50);
-			resultPanel.setSize(865, 550);
+			resultPanel.setLocation(500, 70);
+			resultPanel.setSize(865, 530);
 			transactionsPanel = new TransactionsPanel(this, resultPanel);
 			transactionsPanel.setLocation(250, 200);
 			transactionsPanel.setSize(250, 400);
 			transactionsPanel.setClient(client);
 			readPanel = new ReadPanel(transactionsPanel, branchName);
 			readPanel.setLocation(0, 75);
-			readPanel.setSize(250, 525);
+			readPanel.setSize(250, 425);
 			passwordPanel = new PasswordPanel(transactionsPanel);
-			passwordPanel.setLocation(0, 600);
+			passwordPanel.setLocation(0, 500);
 			passwordPanel.setSize(250, 100);
+			panelLoader = new JPanel();
+			panelLoader.setLocation(580, 620);
+			panelLoader.setSize(200, 50);
+			panelLoader.setVisible(false);
+			JLabel lblLoader = new JLabel(new ImageIcon("ajax-loader.gif"));
+			lblLoader.setText("Executing");
+			panelLoader.add(lblLoader);
 			mainPanel.add(isolationLevelPanel);
 			mainPanel.add(Box.createRigidArea(new Dimension(250, 25)));
 			mainPanel.add(readPanel);
@@ -88,6 +108,7 @@ public class MainFrame extends JFrame{
 			mainPanel.add(transactionListPanel);
 			mainPanel.add(resultPanel);
 			mainPanel.add(passwordPanel);
+			mainPanel.add(panelLoader);
 			
 			this.add(mainPanel);
 			this.setTitle("ADVANDB MC03");
@@ -161,5 +182,9 @@ public class MainFrame extends JFrame{
 	
 	public void enableComboBox() {
 		transactionListPanel.enableComboBox();
+	}
+	
+	public void setLoading(boolean bool) {
+		panelLoader.setVisible(bool);
 	}
 }

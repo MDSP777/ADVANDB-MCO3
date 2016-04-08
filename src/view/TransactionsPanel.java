@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 
 import socket.Client;
 
@@ -39,29 +40,48 @@ public class TransactionsPanel extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
+				new SwingWorker<Void, Void>() {
 					
-					System.out.println("Finished executing SQL statements");
-					ArrayList<String> transactionss = new ArrayList<String>();
-					for(int i = 0; i < transactionsList.size(); i++) {
-						Transaction t = transactions.get(i);
-						if(t instanceof ReadTransaction) {
-							transactionss.add(t.toString()+"@"+transactionsList.get(i).split("@")[3]);
-						} else if (t instanceof WriteTransaction) {
-							transactionss.add(t.toString()+"@"+transactionsList.get(i).split("@")[2]);
+					@Override
+					protected Void doInBackground() throws Exception {
+						// TODO Auto-generated method stub
+						try {
+							mainFrame.setLoading(true);
+							
+							System.out.println("Finished executing SQL statements");
+							ArrayList<String> transactionss = new ArrayList<String>();
+							for(int i = 0; i < transactionsList.size(); i++) {
+								Transaction t = transactions.get(i);
+								if(t instanceof ReadTransaction) {
+									transactionss.add(t.toString()+"@"+transactionsList.get(i).split("@")[3]);
+								} else if (t instanceof WriteTransaction) {
+									transactionss.add(t.toString()+"@"+transactionsList.get(i).split("@")[2]);
+								}
+							}
+							mainFrame.updateTransactionList(transactionss);
+							resultPanel.removeAll();
+							client.case1(transactionsList);
+							transactions.removeAll(transactions);
+							transactionsList.removeAll(transactionsList);
+							taTransactions.setText("");
+							
+							id = 0;
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						}
+						return null;
 					}
-					mainFrame.updateTransactionList(transactionss);
-					client.case1(transactionsList);
-					transactions.removeAll(transactions);
-					transactionsList.removeAll(transactionsList);
-					taTransactions.setText("");
-					resultPanel.hidePanel();
-					id = 0;
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+					
+					
+					@Override
+					protected void done() {
+						// TODO Auto-generated method stub
+						super.done();
+						mainFrame.setLoading(false);
+					}
+				}.execute();
+				resultPanel.hidePanel();
 			}
 		});
 		
@@ -97,13 +117,6 @@ public class TransactionsPanel extends JPanel{
 	}
 	
 	public Object[][] getById(String id) {
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		ArrayList<Entity> entities = client.getById(id);
 		// TODO handle if entities is null (unable to read from other branches)
 

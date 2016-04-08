@@ -26,6 +26,7 @@ public class ResultPanel extends JPanel{
 	}
 	
 	public void buildTableModel(Object[][] resultSet) {
+		System.out.println("ANO BA YAN");
 		if (resultSet != null) {
 			
 			this.resultSet = resultSet;
@@ -33,12 +34,12 @@ public class ResultPanel extends JPanel{
 			this.removeAll();
 			JScrollPane scrollPane = new JScrollPane(result);
 			
-			scrollPane.setSize(850, 500);
+			scrollPane.setSize(850, 480);
 			scrollPane.setLocation(10, 20);
 			
 			JLabel lblRows = new JLabel("Number of rows: " + resultSet.length);
 			lblRows.setSize(850, 20);
-			lblRows.setLocation(10, 520);
+			lblRows.setLocation(10, 500);
 			
 			this.add(scrollPane);
 			this.add(lblRows);

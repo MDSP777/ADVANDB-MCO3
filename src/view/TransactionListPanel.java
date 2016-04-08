@@ -42,7 +42,7 @@ public class TransactionListPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource() == transactionList) {
-			if(transactionList.getSelectedItem() != null){
+			if(transactionList.isEnabled() && transactionList.getSelectedItem() != null){
 				String tString = transactionList.getSelectedItem().toString();
 				if(tString.startsWith("Read")) {
 					mainFrame.updateTableById("Read@" + tString.split("@")[1]);
@@ -50,6 +50,6 @@ public class TransactionListPanel extends JPanel implements ActionListener{
 					mainFrame.updateTableById("Write@" + tString.split("@")[1]);
 				}
 			}
-		}
+		} 
 	}
 }

@@ -40,9 +40,10 @@ public class ReadPanel extends JPanel{
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.setBorder(BorderFactory.createTitledBorder("Read"));
 		this.add(cbDatabases);
+		this.add(Box.createRigidArea(new Dimension(0, 20)));
 		this.add(sliceAndDicePanel);
 		this.add(btnAdd);
-		this.add(Box.createRigidArea(new Dimension(0, 150)));
+		this.add(Box.createRigidArea(new Dimension(0, 100)));
 		this.add(Box.createGlue());
 		
 		btnAdd.addActionListener(new ActionListener() {
