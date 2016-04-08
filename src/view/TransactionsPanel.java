@@ -25,6 +25,7 @@ public class TransactionsPanel extends JPanel{
 	private ArrayList<Transaction> transactions;
 	private JTextArea taTransactions;
 	private JButton btnExecute;
+	private JButton btnReset;
 	private Client client;
 	private ArrayList<String> transactionsList;
 	private int id = 0;
@@ -32,6 +33,7 @@ public class TransactionsPanel extends JPanel{
 	public TransactionsPanel(MainFrame mainFrame, ResultPanel resultPanel) {
 		taTransactions = new JTextArea();
 		taTransactions.setAlignmentX(CENTER_ALIGNMENT);
+		taTransactions.setEditable(false);
 		
 		btnExecute = new JButton("Execute");
 		btnExecute.setAlignmentX(CENTER_ALIGNMENT);
@@ -85,6 +87,19 @@ public class TransactionsPanel extends JPanel{
 			}
 		});
 		
+		btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				resultPanel.removeAll();
+				transactions.removeAll(transactions);
+				transactionsList.removeAll(transactionsList);
+				taTransactions.setText("");
+			}
+		});
+		
 		transactions = new ArrayList<Transaction>();
 		transactionsList = new ArrayList<>();
 	
@@ -92,8 +107,13 @@ public class TransactionsPanel extends JPanel{
 		this.setBorder(BorderFactory.createTitledBorder("Transactions"));
 		
 		JScrollPane scrollPane = new JScrollPane(taTransactions, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JPanel panelBtn = new JPanel();
+		panelBtn.setLayout(new BoxLayout(panelBtn, BoxLayout.LINE_AXIS));
+		panelBtn.add(btnExecute);
+		panelBtn.add(btnReset);
+		
 		this.add(scrollPane);
-		this.add(btnExecute);
+		this.add(panelBtn);
 	}
 	
 	public void addTransaction(Transaction transaction) {

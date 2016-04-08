@@ -73,9 +73,6 @@ public class MainFrame extends JFrame{
 			isolationLevelPanel.setLocation(0, 0);
 			isolationLevelPanel.setSize(250, 70);
 			
-			writePanel = new WritePanel(transactionsPanel, branchName);
-			writePanel.setLocation(250, 0);
-			writePanel.setSize(250, 200);
 			client = new Client(this, IPAddress, branchName);
 			transactionListPanel = new TransactionListPanel(this);
 			transactionListPanel.setLocation(500, 0);
@@ -87,6 +84,9 @@ public class MainFrame extends JFrame{
 			transactionsPanel.setLocation(250, 200);
 			transactionsPanel.setSize(250, 400);
 			transactionsPanel.setClient(client);
+			writePanel = new WritePanel(transactionsPanel, branchName);
+			writePanel.setLocation(250, 0);
+			writePanel.setSize(250, 200);
 			readPanel = new ReadPanel(transactionsPanel, branchName);
 			readPanel.setLocation(0, 75);
 			readPanel.setSize(250, 425);
