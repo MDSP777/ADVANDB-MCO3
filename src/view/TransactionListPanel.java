@@ -31,6 +31,11 @@ public class TransactionListPanel extends JPanel implements ActionListener{
 		for(String s : transactions) {
 			transactionList.addItem(s);
 		}
+		transactionList.setEnabled(false);
+	}
+	
+	public void enableComboBox() {
+		transactionList.setEnabled(true);
 	}
 
 	@Override

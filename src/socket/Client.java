@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import model.Entity;
+import view.MainFrame;
 
 import com.sun.rowset.CachedRowSetImpl;
 
@@ -42,11 +43,15 @@ public class Client {
 	private volatile HashMap<String, ArrayList<Entity>> rsMap = new HashMap<>();
 	private volatile HashMap<String, Connection> connectionsMap = new HashMap<>();
 	private volatile HashMap<String, String> writeMap = new HashMap<>();
+	private volatile HashMap<String, Boolean> writeFinishMap = new HashMap<>();
 	private CachedRowSetImpl rsw;
 	private volatile int nRunningTransactions;
 	private String password;
 	
-	public Client(String serverIp, String branchName) throws IOException{
+	private MainFrame mainFrame;
+	
+	public Client(MainFrame mainFrame, String serverIp, String branchName) throws IOException {
+		this.mainFrame = mainFrame;
 		ss = new ServerSocket(6969);
 		ss.setSoTimeout(1500000);
 		this.serverIp = serverIp;
@@ -144,6 +149,7 @@ public class Client {
 						sk.close();
 						
 						putIntoMap(split[2], connection);
+						writeFinishMap.put(split[2], false);
 					} else {
 						System.out.println("Global write. Sending to server...");
 						Socket sk = new Socket(serverIp, sharedPortNo);
@@ -151,6 +157,7 @@ public class Client {
 						dos.writeUTF(cur+"@"+theOther(clientName));
 						dos.close();
 						sk.close();
+						writeFinishMap.put(split[2], false);
 					}
 				} else {
 					System.out.println("Central update");
@@ -159,6 +166,7 @@ public class Client {
 					dos.writeUTF(cur+"@Central");
 					dos.close();
 					sk.close();
+					writeFinishMap.put(split[2], false);
 				}
 			} catch (Exception e){
 				e.printStackTrace();
@@ -315,12 +323,16 @@ public class Client {
 	                    	c.close();
 	                    	connectionsMap.remove(split[1]);
 	                    	writeMap.put(split[1], "Update successful!");
+	                    	writeFinishMap.put(split[2], true);
+	                    	doneWriting();
 	                    } else if (split[0].startsWith("GG")){
 	                    	Connection c = connectionsMap.get(split[1]);
 	                    	c.createStatement().execute("rollback;");
 	                    	c.close();
 	                    	connectionsMap.remove(split[1]);
 	                    	writeMap.put(split[1], "Update failed!");
+	                    	writeFinishMap.put(split[2], true);
+	                    	doneWriting();
 	                    } else {
 		                    if(split[1].startsWith("SELECT")){
 		                    	ResultSet rs = executeRead(split[1]);
@@ -483,5 +495,17 @@ public class Client {
 		dos.close();
 		sk.close();
 	}
-	
+
+	public void doneWriting() {
+		boolean doneWriting = true;
+		for(String key : writeFinishMap.keySet()) {
+			if(!writeFinishMap.get(key)) {
+				doneWriting = false;
+				break;
+			}
+		}
+		if(doneWriting) {
+			mainFrame.enableComboBox();
+		}
+	}
 }

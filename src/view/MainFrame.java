@@ -71,7 +71,7 @@ public class MainFrame extends JFrame{
 			writePanel.setSize(250, 200);
 			transactionsPanel.setLocation(250, 200);
 			transactionsPanel.setSize(250, 400);
-			client = new Client(IPAddress, branchName);
+			client = new Client(this, IPAddress, branchName);
 			transactionsPanel.setClient(client);
 			transactionListPanel = new TransactionListPanel(this);
 			transactionListPanel.setLocation(500, 0);
@@ -159,5 +159,9 @@ public class MainFrame extends JFrame{
 		} else if(id.startsWith("Write")) {
 			resultPanel.showWriteMessage(transactionsPanel.getWriteStatusById(id.split("@")[1]));
 		}
+	}
+	
+	public void enableComboBox() {
+		transactionListPanel.enableComboBox();
 	}
 }
