@@ -17,6 +17,7 @@ public class QueryGenerator {
 	private static String generate(ReadTransaction transaction) {
 		String query = transaction.getBranchName()+
 				"@SELECT H.id, "
+				+ "H.prov, "
 				+ "H.mun, "
 				+ "H.zone, "
 				+ "H.brgy, "

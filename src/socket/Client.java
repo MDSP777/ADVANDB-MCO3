@@ -307,7 +307,8 @@ public class Client {
 											rs.getInt(11),
 											rs.getInt(12),
 											rs.getInt(13),
-											rs.getInt(14));
+											rs.getInt(14),
+											rs.getInt(15));
 									entities.add(cur);
 								}
 								System.out.println("MAY RESULTSSSS");
@@ -465,7 +466,8 @@ public class Client {
 						rs.getInt(11),
 						rs.getInt(12),
 						rs.getInt(13),
-						rs.getInt(14));
+						rs.getInt(14),
+						rs.getInt(15));
 				e.add(cur);
 			}
 		} catch (SQLException e1) {
