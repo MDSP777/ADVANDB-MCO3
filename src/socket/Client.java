@@ -323,7 +323,7 @@ public class Client {
 	                    	c.close();
 	                    	connectionsMap.remove(split[1]);
 	                    	writeMap.put(split[1], "Update successful!");
-	                    	writeFinishMap.put(split[2], true);
+	                    	writeFinishMap.put(split[1], true);
 	                    	doneWriting();
 	                    } else if (split[0].startsWith("GG")){
 	                    	Connection c = connectionsMap.get(split[1]);
@@ -331,7 +331,7 @@ public class Client {
 	                    	c.close();
 	                    	connectionsMap.remove(split[1]);
 	                    	writeMap.put(split[1], "Update failed!");
-	                    	writeFinishMap.put(split[2], true);
+	                    	writeFinishMap.put(split[1], true);
 	                    	doneWriting();
 	                    } else {
 		                    if(split[1].startsWith("SELECT")){
