@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -39,9 +40,9 @@ public class ReadPanel extends JPanel{
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		this.setBorder(BorderFactory.createTitledBorder("Read"));
 		this.add(cbDatabases);
-		this.add(rollupAndDrilldownPanel);
 		this.add(sliceAndDicePanel);
 		this.add(btnAdd);
+		this.add(Box.createRigidArea(new Dimension(0, 150)));
 		this.add(Box.createGlue());
 		
 		btnAdd.addActionListener(new ActionListener() {
