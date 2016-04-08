@@ -81,4 +81,9 @@ public class ResultPanel extends JPanel{
 		
 		return data;
 	}
+
+	public void hidePanel() {
+		// TODO Auto-generated method stub
+		this.removeAll();
+	}
 }

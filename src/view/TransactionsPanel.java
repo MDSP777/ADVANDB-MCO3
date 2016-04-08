@@ -28,7 +28,7 @@ public class TransactionsPanel extends JPanel{
 	private ArrayList<String> transactionsList;
 	private int id = 0;
 	
-	public TransactionsPanel(MainFrame mainFrame) {
+	public TransactionsPanel(MainFrame mainFrame, ResultPanel resultPanel) {
 		taTransactions = new JTextArea();
 		taTransactions.setAlignmentX(CENTER_ALIGNMENT);
 		
@@ -40,7 +40,7 @@ public class TransactionsPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					client.case1(transactionsList);
+					
 					System.out.println("Finished executing SQL statements");
 					ArrayList<String> transactionss = new ArrayList<String>();
 					for(int i = 0; i < transactionsList.size(); i++) {
@@ -52,9 +52,11 @@ public class TransactionsPanel extends JPanel{
 						}
 					}
 					mainFrame.updateTransactionList(transactionss);
+					client.case1(transactionsList);
 					transactions.removeAll(transactions);
 					transactionsList.removeAll(transactionsList);
 					taTransactions.setText("");
+					resultPanel.hidePanel();
 					id = 0;
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -95,6 +97,13 @@ public class TransactionsPanel extends JPanel{
 	}
 	
 	public Object[][] getById(String id) {
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		ArrayList<Entity> entities = client.getById(id);
 		// TODO handle if entities is null (unable to read from other branches)
 
@@ -105,6 +114,7 @@ public class TransactionsPanel extends JPanel{
 		for(int i = 0; i < entities.size(); i++) {
 			data[i] = entities.get(i).toArray();
 		}
+		
 		return data;
 	}
 	

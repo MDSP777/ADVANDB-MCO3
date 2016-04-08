@@ -94,6 +94,7 @@ public class Client {
 		for(Thread t: threads){
 			t.join();
 		}
+		doneWriting();
 	}
 	
 	class TransactionThread implements Runnable {
@@ -429,6 +430,7 @@ public class Client {
 					s.close();
                 	}catch(Exception e){
                 	}
+					
                 } 
 		}
 		
@@ -505,6 +507,9 @@ public class Client {
 			}
 		}
 		if(doneWriting) {
+			for(String key : writeFinishMap.keySet()) {
+				writeFinishMap.remove(key);
+			}
 			mainFrame.enableComboBox();
 		}
 	}

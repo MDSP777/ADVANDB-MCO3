@@ -56,29 +56,27 @@ public class MainFrame extends JFrame{
 			this.setExtendedState( this.getExtendedState()|JFrame.MAXIMIZED_BOTH );
 			mainPanel = new JPanel();
 			mainPanel.setLayout(null);
-			
-			transactionsPanel = new TransactionsPanel(this);
-			
-			
 			isolationLevelPanel = new IsolationLevelPanel();
 			isolationLevelPanel.setLocation(0, 0);
 			isolationLevelPanel.setSize(250, 50);
-			readPanel = new ReadPanel(transactionsPanel, branchName);
-			readPanel.setLocation(0, 75);
-			readPanel.setSize(250, 525);
+			
 			writePanel = new WritePanel(transactionsPanel, branchName);
 			writePanel.setLocation(250, 0);
 			writePanel.setSize(250, 200);
-			transactionsPanel.setLocation(250, 200);
-			transactionsPanel.setSize(250, 400);
 			client = new Client(this, IPAddress, branchName);
-			transactionsPanel.setClient(client);
 			transactionListPanel = new TransactionListPanel(this);
 			transactionListPanel.setLocation(500, 0);
 			transactionListPanel.setSize(865, 50);
 			resultPanel = new ResultPanel();
 			resultPanel.setLocation(500, 50);
 			resultPanel.setSize(865, 550);
+			transactionsPanel = new TransactionsPanel(this, resultPanel);
+			transactionsPanel.setLocation(250, 200);
+			transactionsPanel.setSize(250, 400);
+			transactionsPanel.setClient(client);
+			readPanel = new ReadPanel(transactionsPanel, branchName);
+			readPanel.setLocation(0, 75);
+			readPanel.setSize(250, 525);
 			passwordPanel = new PasswordPanel(transactionsPanel);
 			passwordPanel.setLocation(0, 600);
 			passwordPanel.setSize(250, 100);
